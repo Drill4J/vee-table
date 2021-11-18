@@ -1,0 +1,136 @@
+SYNC RESULT
+    TODO add UI to launch setup autotests with specific versions
+    "prepare" test results (set versions, but post status/description later)
+    links to RP
+    Add links to component repositories
+    TODO e2e tests integrate report portal
+
+https://github.com/settings/applications/1751059
+https://romandavlyatshin.github.io/vvv/
+http://localhost:3000/
+
+UI
+    + add tests - version pickers
+    + show latest versions version table
+    ledger
+        +/- trim all strings
+        + provide latests
+            + for all components
+            - for setup
+        + validate "New test result" for exhaustive list of setup's component versions
+    + versions tables overflow x - scrollbar
+
+Create github action to submit
+    + new version
+    + test result
+
++ set page title
+- change favicon
+
+BUGS
+    Duplicate ledger instance
+    Key prop warning
+
+Next steps
+
+    Record commands?
+
+    Retries on SHA mismatch fail ?
+        what's exactly changed
+
+    Edit basic
+        - names, descriptions, etc
+
+    TEST check that only Drill4J-org users can _edit_
+        - on submit show error for not-authorized users
+
+    Editing setups components
+
+    Hide CREATE/EDIT controls for non-authorized users
+
+    Raw tests results table
+
+QOL Improvements
+    Show if there where changes since last page refresh
+        setInterval(()=> ledger.checkChanges(), 1000)
+    Show loader when authentication is in progress (after code is obtained, but oktokit instance is not created yet)
+    Show errors if authentication fails (e.g. due to proxy being down/unavailable)
+    Setups - unclear what components are in setup without expanding versions
+        add component to Filter/highlight setups with certain component, componentS?
+    - copy latests on click in .env format
+    add "type" to test result? - with arbitrary string, e.g. "e2e UI", "manual" etc
+
+setups - improve layout for clarity
+
+admin backend test2code plugin java-agent admin-ui (old) admin-ui (microfrontend) test2code-ui state-watcher-ui autotest-agent js-agent ast-parser agent-runner browser-proxy browser ext manual ktor-swagger
+
+editing fields
+
+CI
+    add version
+    add test result
+
+Manual
+    add component
+    add version
+    add setup
+    add test result
+
+CHALLENGES
+lots of components ( > 10 updated on frequent basis)
+
+    hard to keep track of
+        - existing versions
+        - compatibility/breaking changes
+        - existing deployment variations
+
+    no automated tests -> hard to check what is broken -> troubleshooting is a pain (what/where is broken)
+
+SOLUTIONS?
+manual tracking with xlsx spreadsheet
+
+CONS: - prone to human error (easy to forget, make mistakes) - VBA automation - does not work in web -> hard to share/collaborate
+
+WHAT WE'RE AIMING FOR
+e2e automated smoke for basic setups
+single java agent
+microservice java agent
+js agent
+...etc
+
+    automated tracking of
+        existing set of components
+        latest versions
+        various setups
+        various test results
+            e2e auto tests
+            manual tests
+        who authored changes
+
+IMPLEMENTATION
+Use GitHub repository as a storage. Why?
+no hosting required
+publicly available
+built-in history & authentication
+
+    Implement lightweight wrapper to CRUD components/versions/tests/setups
+
+    Human-friendly web panel
+        Quick dashboard for current versions status
+        Manual testing status update
+            UI hosted on Github Pages
+            _almost_ no backend required (sans GitHub OAuth proxy)
+
+    Integrate with our CI/CD
+        "perfect world"
+        check each setup if dependant component changed
+        record results
+
+PROS:
+info on versions is centralized, publicly available and auto-updated
+
+    expandable ->
+        utilize versions data to implement .sh scripts to ease deployment
+        ("one-click" deployment of various setups (where it's possible/reasonable))
+            Q: Why?
+            A: Questions like "exact components to deploy"/"exact versions to utilize" are common hiccup among new users

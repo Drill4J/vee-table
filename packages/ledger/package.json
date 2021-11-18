@@ -1,0 +1,17 @@
+{
+  "name": "@drill4j/vee-ledger",
+  "description": "Library implementing \"API layer\" to manipulate and query ledger data",
+  "version": "0.0.0",
+  "private": true,
+  "homepage": "https://github.com/Drill4J/vee-table",
+  "author": "github.com/RomanDavlyatshin",
+  "license": "Apache 2.0",
+  "dependencies": {
+    "@octokit/core": "^3.5.1",
+    "browser-or-node": "^2.0.0",
+    "semver": "^7.3.5"
+  },
+  "devDependencies": {
+    "@octokit/types": "^6.34.0"
+  }
+}
