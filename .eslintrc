@@ -1,22 +1,12 @@
 {
-  "extends": [
-    "react-app",
-    "react-app/jest"
-  ],
-  "plugins": [
-    "drill4j"
-  ],
+  "extends": ["react-app", "react-app/jest"],
+  "plugins": ["drill4j"],
   "rules": {
-    "drill4j/license-header": [
-      "error"
-    ],
+    "drill4j/license-header": ["error"],
     "import/prefer-default-export": 0,
     "import/extensions": 0,
     "indent": "off",
-    "@typescript-eslint/indent": [
-      "error",
-      2
-    ],
+    "@typescript-eslint/indent": ["error", 2],
     "eofline": 0,
     "arrow-parens": 0,
     "ordered-imports": 0,

@@ -29,8 +29,8 @@ const config = {
 };
 
 if (process.env.NODE_ENV === 'development') {
-  config.devtool = 'eval-source-map'
-  config.watch = true
+  config.devtool = 'eval-source-map';
+  config.watch = true;
 }
 
-module.exports = config
+module.exports = config;
