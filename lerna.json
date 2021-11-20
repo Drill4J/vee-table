@@ -1,4 +1,9 @@
 {
   "packages": ["packages/*"],
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "command": {
+    "bootstrap": {
+      "hoist": "{@types/node,typescript,ts-loader,webpack,webpack-cli,webpack-node-externals}"
+    }
+  }
 }

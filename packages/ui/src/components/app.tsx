@@ -77,7 +77,7 @@ function RenderStuff() {
       {/*SETUPS  */}
       <h3 className="mt-3">SETUPS</h3>
       <div className="row">
-        {data.setups.map(setup => {
+        {data.setups.map((setup: any) => {
           const setupTests = ledger.getSetupTests(setup.id);
           return (
             <div className="col-12 col-md-6 col-xl-4 mb-3" key={setup.id}>

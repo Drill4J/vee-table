@@ -18,7 +18,7 @@ import connection from '../../github/connection';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
 import { useState } from 'react';
-import { LedgerData } from '../../lib/types';
+import { LedgerData } from '@drill4j/vee-ledger';
 import { Ledger } from '@drill4j/vee-ledger';
 
 const VERSION_PLACEHOLDER = 'SemVer, e.g. x.y.z';

@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "target": "es6",
     "moduleResolution": "node",
+    "declaration": true,
     "sourceMap": true,
     "outDir": "build",
     "baseUrl": "src",

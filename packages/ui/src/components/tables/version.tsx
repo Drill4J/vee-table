@@ -17,7 +17,7 @@ import React from 'react';
 import { useTable, usePagination } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
-import { Component, Version } from '../../lib/types';
+import { Component, Version } from '@drill4j/vee-ledger';
 import Question from '../question';
 import { T } from './styles';
 import { ColumnDetails } from './types';

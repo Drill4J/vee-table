@@ -15,7 +15,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
-import { LedgerData } from '../../lib/types';
+import { LedgerData } from '@drill4j/vee-ledger';
 import connection from '../connection';
 
 export default function () {

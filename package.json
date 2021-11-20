@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "install-deps": "lerna bootstrap --hoist={@types/node,typescript,awesome-typescript-loader,webpack-cli,webpack-node-externals} -- --legacy-peer-deps",
+    "install-deps": "lerna bootstrap --hoist={@types/node,typescript,ts-loader,webpack,webpack-cli,webpack-node-externals}",
     "build": "lerna run build --stream"
   },
   "devDependencies": {

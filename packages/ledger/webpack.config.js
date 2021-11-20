@@ -1,22 +1,14 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
-const { CheckerPlugin } = require('awesome-typescript-loader');
 
 const config = {
   mode: process.env.NODE_ENV,
-  target: ['node'],
+  target: 'web',
   externals: [nodeExternals()],
   entry: './src/index.ts',
   module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        use: 'awesome-typescript-loader',
-        exclude: /node_modules/,
-      },
-    ],
+    rules: [{ test: /\.ts?$/, loader: 'ts-loader' }],
   },
-  plugins: [new CheckerPlugin()],
   resolve: {
     extensions: ['.ts', '.js'],
   },

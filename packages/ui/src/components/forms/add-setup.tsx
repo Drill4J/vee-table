@@ -15,7 +15,7 @@
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Ledger } from '@drill4j/vee-ledger';
-import { LedgerData } from '../../lib/types';
+import { LedgerData } from '@drill4j/vee-ledger';
 import Spinner from '../spinner';
 import { startsWith, stripPrefix } from './util';
 

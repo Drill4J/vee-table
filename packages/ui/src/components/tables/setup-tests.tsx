@@ -17,7 +17,7 @@ import React from 'react';
 import { usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
-import { Setup, TestResult } from '../../lib/types';
+import { Setup, TestResult } from '@drill4j/vee-ledger';
 import ComponentsVersionsMap from '../components-versions-map';
 import NoRender from '../no-render';
 import { sortBy } from './util';

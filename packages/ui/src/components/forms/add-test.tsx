@@ -16,7 +16,7 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
-import { Component, LedgerData } from '../../lib/types';
+import { Component, LedgerData } from '@drill4j/vee-ledger';
 import { useEffect, useMemo, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import { startsWith, stripPrefix } from './util';
