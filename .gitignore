@@ -1,3 +1,5 @@
 lerna-debug.log
 node_modules
+npm-debug.log*
+# VSCode extension's files
 .history

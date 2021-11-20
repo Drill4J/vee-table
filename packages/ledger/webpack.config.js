@@ -4,9 +4,9 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 
 const config = {
   mode: process.env.NODE_ENV,
-  target: 'node',
+  target: ['node'],
   externals: [nodeExternals()],
-  entry: './src/bin/index.ts',
+  entry: './src/index.ts',
   module: {
     rules: [
       {
@@ -22,9 +22,18 @@ const config = {
   },
   output: {
     filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
-    type: 'module',
+    path: path.resolve(__dirname, 'build'),
+    libraryTarget: 'umd',
+    // type: 'module',
     // type: 'umd'
+
+    // from js-auto-test-agent
+    // path: path.resolve(__dirname, 'build'),
+    // filename: 'index.js',
+    // library: 'DrillJsAutoTestAgent',
+    // libraryTarget: 'umd',
+    // globalObject: 'this',
+    // umdNamedDefine: true,
   },
 };
 

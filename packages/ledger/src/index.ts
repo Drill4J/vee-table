@@ -27,10 +27,10 @@ import {
   ComponentsAvailableVersionsMap,
 } from './types';
 import { b64_to_utf8, utf8_to_b64, validateNonEmptyString } from './util';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+// import dayjs from 'dayjs';
+// import relativeTime from 'dayjs/plugin/relativeTime';
 
-dayjs.extend(relativeTime);
+// dayjs.extend(relativeTime);
 
 export default async function getLedger(octokitAuthToken: string, ledgerRepo: LedgerRepoOptions) {
   const ledger = new Ledger({
@@ -279,10 +279,11 @@ export class Ledger {
     }
 
     const existingVersion = this.findVersion(componentId, tag);
+    // It was created at ${dayjs(existingVersion.date).format('DD/MM/YY hh:mm:ss')}.
     if (existingVersion) {
       const msg = `
       Version ${componentId}:${tag} already exists.
-      It was created at ${dayjs(existingVersion.date).format('DD/MM/YY hh:mm:ss')}.
+      It was created at ${new Date(existingVersion.date)}
       Duplicate version will be added and take priority over the previous one.
       But you will still able to see it in the version table.
     `;

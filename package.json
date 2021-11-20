@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "install-deps": "lerna bootstrap --hoist={@types/node,typescript,awesome-typescript-loader,webpack-cli,webpack-node-externals} -- --legacy-peer-deps",
+    "build": "lerna run build --stream"
+  },
   "devDependencies": {
     "typescript": "^4.4.4",
     "lerna": "^4.0.0",
