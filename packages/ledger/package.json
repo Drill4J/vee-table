@@ -12,7 +12,7 @@
     "start": "set NODE_ENV=development&& npx webpack --config webpack.config.js",
     "build": "npx webpack --config webpack.config.js",
     "lint": "eslint . --ext .ts --fix",
-    "prepublish": "npm run build && npm prune --production && rm -f npm-shrinkwrap.json && npm shrinkwrap",
+    "prepublish": "npm i --force && npm run build && npm prune --production && rm -f npm-shrinkwrap.json && npm shrinkwrap",
     "publish": "npm publish"
   },
   "dependencies": {
