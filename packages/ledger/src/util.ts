@@ -13,12 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// import platform from 'browser-or-node'; // TODO bundle it
+export function platform() {
+  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+  const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+  return { isBrowser, isNode };
+}
+
 export function utf8_to_b64(str: string) {
-  return window.btoa(unescape(encodeURIComponent(str)));
+  if (platform().isBrowser) {
+    return window.btoa(unescape(encodeURIComponent(str)));
+  }
+  if (platform().isNode) {
+    return Buffer.from(unescape(encodeURIComponent(str))).toString('base64');
+  }
+  throw new Error('Unsupported platform');
 }
 
 export function b64_to_utf8(str: string) {
-  return decodeURIComponent(escape(window.atob(str)));
+  if (platform().isBrowser) {
+    return decodeURIComponent(escape(window.atob(str)));
+  }
+  if (platform().isNode) {
+    return decodeURIComponent(escape(Buffer.from(str, 'base64').toString())); // TODO node vs browser
+  }
+  throw new Error('Unsupported platform');
 }
 
 export function validateNonEmptyString(key: string, value: string): void | never {

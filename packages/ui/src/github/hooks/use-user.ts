@@ -28,7 +28,7 @@ export default function () {
         if (!ledger) {
           return;
         }
-        const response = await ledger.getOctokitInstance().request(`GET /user`);
+        const response = await (await ledger.getOctokitInstance()).request(`GET /user`);
         if (response.status !== 200) {
           const msg = 'ERROR: Failed to obtain user data. Open development console, copy error log and contact the development team';
           console.error(msg, '\n', 'response', response, '---ERROR LOG END---');

@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const config = {
   mode: process.env.NODE_ENV,
@@ -12,20 +13,15 @@ const config = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [path.resolve(__dirname, 'src', 'types-internal.d.ts'), path.resolve(__dirname, 'src', 'types.d.ts')],
+    }),
+  ],
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'build'),
     libraryTarget: 'umd',
-    // type: 'module',
-    // type: 'umd'
-
-    // from js-auto-test-agent
-    // path: path.resolve(__dirname, 'build'),
-    // filename: 'index.js',
-    // library: 'DrillJsAutoTestAgent',
-    // libraryTarget: 'umd',
-    // globalObject: 'this',
-    // umdNamedDefine: true,
   },
 };
 

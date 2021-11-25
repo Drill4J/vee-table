@@ -16,6 +16,7 @@
 
 import { Octokit } from '@octokit/core';
 import semver from 'semver';
+
 import {
   LedgerRepoOptions,
   LedgerData,
@@ -25,24 +26,11 @@ import {
   Component,
   Version,
   ComponentsAvailableVersionsMap,
-} from './types';
-import { b64_to_utf8, utf8_to_b64, validateNonEmptyString } from './util';
-// import dayjs from 'dayjs';
-// import relativeTime from 'dayjs/plugin/relativeTime';
+  TestResult,
+} from './types-internal';
+import { b64_to_utf8, utf8_to_b64, validateNonEmptyString, platform } from './util';
 
-// dayjs.extend(relativeTime);
-
-export default async function getLedger(octokitAuthToken: string, ledgerRepo: LedgerRepoOptions) {
-  const ledger = new Ledger({
-    octokitAuthToken,
-    ledgerRepo,
-    isCli: false,
-  });
-  await ledger.init();
-  return ledger;
-}
-
-type LedgerConstructorOptions = { octokitAuthToken: string; ledgerRepo: LedgerRepoOptions; isCli?: boolean };
+type LedgerConstructorOptions = { octokitAuthToken: string; ledgerRepo: LedgerRepoOptions };
 export class Ledger {
   private octokit: Octokit | undefined;
   private auth: string;
@@ -59,32 +47,31 @@ export class Ledger {
   public data: LedgerData | undefined; // FIXME private
   private sha: string | undefined;
 
-  private isCli: boolean;
+  private connecting: Promise<any>;
 
   // PREPARE/ GH INTERFACING
   constructor(options: LedgerConstructorOptions) {
-    const { octokitAuthToken, ledgerRepo, isCli = true } = options;
+    const { octokitAuthToken, ledgerRepo } = options;
     this.auth = octokitAuthToken;
     this.ledgerRepo = ledgerRepo;
-    this.isCli = isCli;
+    this.connecting = this.connect();
   }
 
-  public async init() {
-    if (this.octokit) return;
+  private async connect() {
     this.octokit = new Octokit({ auth: this.auth });
-    await this.fetch();
-  }
-
-  public getOctokitInstance() {
-    if (!this.octokit) throw new Error('You are not authorized with GitHub account');
-    return this.octokit;
-  }
-
-  public async fetch() {
     const data = await this.fetchData();
     this.data = this.deserialize(data.content);
+    this.validateDataObject(this.data);
     this.sha = data.sha;
-    return this.data;
+  }
+
+  public async connected() {
+    return this.connecting;
+  }
+
+  public async getOctokitInstance() {
+    await this.connecting;
+    return this.octokit;
   }
 
   public async checkChanges(callback: () => void) {
@@ -92,26 +79,7 @@ export class Ledger {
     if (sha !== this.sha) callback();
   }
 
-  public async launchTests() {
-    if (!this.octokit) return;
-    const owner = 'RomanDavlyatshin';
-    const repo = 'improved-rotary-phone';
-    const workflow_id = 'test.yml';
-    const ref = 'main';
-    const inputs = {
-      setup_id: 'single-java-agent',
-    };
-    const response = await this.octokit.request(`POST /repos/${owner}/${repo}/actions/workflows/${workflow_id}/dispatches`, {
-      ref,
-      inputs,
-    });
-    if (response.status !== 200) {
-      throw new Error(`Failed to load ledger data: ${response.data.error}`);
-    }
-  }
-
   private async fetchData() {
-    if (!this.octokit) return;
     await this.checkRateLimit();
     // HACK if cache is going to become a problem :( ?ignore_cache=${Date.now()}
     const response = await this.octokit.request(
@@ -138,7 +106,6 @@ export class Ledger {
   //
   // #2 malicious user spams refresh button to drain API quota
   private async checkRateLimit() {
-    if (!this.octokit) return;
     // API reference https://docs.github.com/en/rest/reference/repos#get-repository-content
     const response = await this.octokit.request(`GET /rate_limit`);
     const { limit, remaining, reset, used } = response.data.rate;
@@ -168,35 +135,20 @@ export class Ledger {
     if (response.status !== 200) {
       throw new Error(`Failed to update ledger data: ${response.data.error}`);
     }
-
-    // const postCheck = await (this.octokit as any).request(
-    //   `GET /repos/${this.ledgerRepo.owner}/${this.ledgerRepo.name}/contents/${this.ledgerFilePath}`,
-    // );
-
-    // (this.data as any) = newData;
-    // this.sha = response.data.content.sha;
-
-    // if (this.sha !== postCheck.data.sha) {
-    //   const msg = 'CRITICAL ERROR: post-update SHA check failed. Open development console, copy error log and contact the development team';
-    //   console.error(msg, '\n', 'response data', '\n', response, '\n', 'check data', '\n', postCheck, '\n', '---CRITICAL ERROR LOG END---');
-    //   throw new Error(msg);
-    // }
   }
 
   private deserialize(rawData: any): LedgerData {
+    console.log('deserialize');
     return JSON.parse(b64_to_utf8(rawData));
   }
 
   private serialize(data: LedgerData): string {
+    console.log('serialize');
     return utf8_to_b64(JSON.stringify(data));
   }
 
   // CREATE
   public async addComponent(rawData: Component) {
-    if (!this.checkData(this.data)) {
-      throw new Error(`No local data; Check internet connection and make sure that Github and ${this.ledgerRepo.url} are reachable`);
-    }
-
     // TODO replace with something like joi but lightweight
     validateNonEmptyString('id', rawData.id);
     validateNonEmptyString('name', rawData.name);
@@ -212,10 +164,6 @@ export class Ledger {
   }
 
   public async addSetup(rawSetupData: Setup) {
-    if (!this.checkData(this.data)) {
-      throw new Error(`No local data; Check internet connection and make sure that Github and ${this.ledgerRepo.url} are reachable`);
-    }
-
     validateNonEmptyString('id', rawSetupData.id);
     validateNonEmptyString('name', rawSetupData.name);
 
@@ -261,25 +209,18 @@ export class Ledger {
   }
 
   public async addVersion(rawData: RawVersion) {
-    if (!this.checkData(this.data)) {
-      throw new Error(`No local data; Check internet connection and make sure that Github and ${this.ledgerRepo.url} are reachable`);
-    }
-
     const { componentId, tag } = rawData;
 
     validateNonEmptyString('componentId', componentId);
     validateNonEmptyString('tag', tag);
 
     if (!this.isComponentExists(componentId)) {
-      throw new Error(`Component with id "${componentId}" does not exist`);
-      // if (this.softMode)
-      // const msg = `Component with id ${componentId} does not exist, but it will be added automatically. Later, you can edit it's parameters manually`;
-      // this.warning(msg);
-      // await this.addComponent({ id: componentId, name: componentId });
+      const msg = `Component with id ${componentId} does not exist, but it will be added automatically. Later, you can edit it's parameters manually`;
+      this.warning(msg);
+      await this.addComponent({ id: componentId, name: componentId });
     }
 
     const existingVersion = this.findVersion(componentId, tag);
-    // It was created at ${dayjs(existingVersion.date).format('DD/MM/YY hh:mm:ss')}.
     if (existingVersion) {
       const msg = `
       Version ${componentId}:${tag} already exists.
@@ -298,10 +239,6 @@ export class Ledger {
   }
 
   public async addTest(data: RawTestResult) {
-    if (!this.checkData(this.data)) {
-      throw new Error(`No local data; Check internet connection and make sure that Github and ${this.ledgerRepo.url} are reachable`);
-    }
-
     validateNonEmptyString('id', data.setupId);
     validateNonEmptyString('status', data.status);
 
@@ -358,13 +295,10 @@ export class Ledger {
 
   // GET
   public getLatestVersion(componentId: string) {
-    if (!this.data) throw new Error('no data'); // FIXME
     return this.data.versions.filter(x => x.componentId === componentId).sort((a, b) => semver.compare(b.tag, a.tag))[0];
   }
 
   public getLatestVersions(setupId?: string): Version[] {
-    if (!this.data) throw new Error('no data'); // FIXME
-
     if (setupId) {
       const setup = this.data.setups.find(x => setupId === x.id);
       if (!setup) {
@@ -378,7 +312,6 @@ export class Ledger {
   }
 
   public getSetupComponents(setupId: string) {
-    if (!this.data) throw new Error('no data'); // FIXME
     const setup = this.getSetupById(setupId);
     if (!setup) {
       throw new Error(`setup with id "${setupId}" is not found`);
@@ -391,24 +324,20 @@ export class Ledger {
   }
 
   private getSetupById(setupId: string) {
-    // FIXME this.data existence
-    return (this.data as any as LedgerData).setups.find((x: Setup) => x.id === setupId);
+    return this.data.setups.find((x: Setup) => x.id === setupId);
   }
 
   public getSetupTests(setupId: string) {
-    // FIXME this.data existence
-    return (this.data as any as LedgerData).tests.filter(x => x.setupId === setupId);
+    return this.data.tests.filter((x: TestResult) => x.setupId === setupId);
   }
 
   private findVersion(componentId: string, versionTag: string) {
-    // FIXME this.data existence
-    const componentVersions = (this.data as any as LedgerData).versions.filter(x => x.componentId === componentId);
+    const componentVersions = this.data.versions.filter(x => x.componentId === componentId);
     const existingVersion = componentVersions.find(x => x.tag === versionTag);
     return existingVersion;
   }
 
   public getComponentsVersions(componentIds: string[]): ComponentsAvailableVersionsMap {
-    if (!this.data) throw new Error('no data'); // FIXME
     const result = componentIds.reduce<ComponentsAvailableVersionsMap>((a, x) => {
       a[x] = [];
       return a;
@@ -424,21 +353,8 @@ export class Ledger {
     return result;
   }
 
-  // MISC
-  private checkData(data: any): data is LedgerData {
-    return (
-      data &&
-      Array.isArray((data as LedgerData).components) &&
-      Array.isArray((data as LedgerData).versions) &&
-      Array.isArray((data as LedgerData).setups) &&
-      Array.isArray((data as LedgerData).tests)
-    );
-  }
-
   // TODO deal with polymorphic function signature phobia
   private isComponentExists(id: string, name?: string) {
-    if (!this.data) throw new Error('no data'); // FIXME
-
     if (name) {
       return this.data.components.findIndex(x => x.id === id && x.name === name) > -1;
     }
@@ -446,8 +362,29 @@ export class Ledger {
     return this.data.components.findIndex(x => x.id === id) > -1;
   }
 
+  // MISC
+  private validateDataObject(rawData: unknown): void | never {
+    const data: LedgerData = <LedgerData>rawData;
+    // TODO replace with something like joi but lightweight
+    const isValidDataObject =
+      data && Array.isArray(data.components) && Array.isArray(data.versions) && Array.isArray(data.setups) && Array.isArray(data.tests);
+
+    if (!isValidDataObject) {
+      throw new Error(
+        `Received malformed ledger data` +
+          '\n' +
+          `${this.ledgerRepo.url}/${this.ledgerFilePath}` +
+          '\n' +
+          `Ensure that JSON follows the schema:` +
+          '\n' +
+          JSON.stringify(this.defaultData, undefined, 2), // serialize schema
+      );
+    }
+  }
+
   private warning(msg: string) {
-    this.isCli ? console.warn(msg) : alert(msg);
-    return;
+    // @ts-ignore
+    platform().isBrowser && alert(msg);
+    !platform().isBrowser && console.warn(msg);
   }
 }

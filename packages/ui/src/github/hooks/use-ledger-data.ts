@@ -29,10 +29,8 @@ export default function () {
         setIsLoading(true);
         const ledger = await connection.getLedgerInstance();
         if (!ledger) return;
-
-        const data = await ledger.fetch();
-        setData(data);
-
+        await ledger.connected();
+        setData(ledger.data);
         setLedgerInstance(ledger);
       } catch (e) {
         console.error(e);

@@ -51,6 +51,10 @@ Check out the ["How It Works"](./HOW_IT_WORKS.md) for more detailed explanation 
    lerna add *package-name* --scope=@drill4j/vee-ledger # add --dev to install to devDependencies
    ```
 
+   > WARN: No packages found where _package-name_ can be added.
+   >
+   > Solution: you either _already installed_ this package or trying to install _multiple packages_ (add them one by one)
+
 4. To make dependency common (add to the _root-level_ node_modules folder) add new entry to the lerna.json bootstrap.hoist string
 
    ```json

@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 import gitConnect from './third-party/git-connect/git-connect';
-import getLedger, { Ledger } from '@drill4j/vee-ledger';
+import { Ledger } from '@drill4j/vee-ledger';
 
 const { REACT_APP_GITHUB_OAUTH_APP_CLIENT_ID, REACT_APP_GITHUB_OAUTH_APP_PROXY, REACT_APP_GITHUB_OAUTH_APP_SCOPES } = process.env;
 const connection = gitConnect({
   client_id: REACT_APP_GITHUB_OAUTH_APP_CLIENT_ID,
   proxy: REACT_APP_GITHUB_OAUTH_APP_PROXY,
   scope: REACT_APP_GITHUB_OAUTH_APP_SCOPES,
-
   //expires: 7,  //optional, default: 7; the number of days after cookies expire
-
   //this options are used and required only for `git-edit` module
   // owner: 'github_username',  //application owner's github username
   // reponame: 'github_reponame', //application's repository name
 });
-
 let ledger: Ledger;
+
 async function getLedgerInstance() {
   if (!connection.isConnected()) return false;
   if (ledger) return ledger;
+
   console.log('CREATE NEW LEDGER INSTANCE');
   const auth = connection.getCookie('github_access_token');
-  ledger = await getLedger(auth, {
-    url: String(process.env.REACT_APP_LEDGER_REPO_URL),
-    owner: String(process.env.REACT_APP_LEDGER_REPO_OWNER),
-    name: String(process.env.REACT_APP_LEDGER_REPO_NAME),
-  });
+  ledger = new Ledger({
+    octokitAuthToken: auth,
+    ledgerRepo: {
+      url: String(process.env.REACT_APP_LEDGER_REPO_URL),
+      owner: String(process.env.REACT_APP_LEDGER_REPO_OWNER),
+      name: String(process.env.REACT_APP_LEDGER_REPO_NAME),
+    },
+  });  
   return ledger;
 }
 
