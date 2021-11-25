@@ -11,7 +11,9 @@
   "scripts": {
     "start": "set NODE_ENV=development&& npx webpack --config webpack.config.js",
     "build": "npx webpack --config webpack.config.js",
-    "lint": "eslint . --ext .ts --fix"
+    "lint": "eslint . --ext .ts --fix",
+    "prepublish": "npm run build && npm prune --production && rm -f npm-shrinkwrap.json && npm shrinkwrap",
+    "publish": "npm publish"
   },
   "dependencies": {
     "@octokit/core": "^3.5.1",
