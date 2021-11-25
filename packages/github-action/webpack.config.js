@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const config = {
   target: 'node',
@@ -10,6 +11,15 @@ const config = {
       { test: /\.ts?$/, loader: "ts-loader" }
     ]
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        path.resolve(__dirname, 'action.yml'),
+        path.resolve(__dirname, 'package.json'),
+        path.resolve(__dirname, 'package-lock.json'),
+      ]
+    }),
+  ],
   resolve: {
     extensions: ['.ts', '.js'],
   },
