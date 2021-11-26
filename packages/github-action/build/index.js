@@ -3495,7 +3495,7 @@ function main() {
                     name: core.getInput(INPUT_KEYS.LEDGER_REPO_NAME),
                 },
             });
-            yield ledger.connected;
+            yield ledger.connected();
             switch (actionType) {
                 case ACTION_TYPES.ADD_VERSION: {
                     const componentId = core.getInput(INPUT_KEYS.VERSION_COMPONENT_ID);
