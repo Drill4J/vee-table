@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/vee-table/static/css/main.e2521e86.chunk.css",
-    "main.js": "/vee-table/static/js/main.41899b01.chunk.js",
-    "main.js.map": "/vee-table/static/js/main.41899b01.chunk.js.map",
+    "main.js": "/vee-table/static/js/main.db87fe8e.chunk.js",
+    "main.js.map": "/vee-table/static/js/main.db87fe8e.chunk.js.map",
     "runtime-main.js": "/vee-table/static/js/runtime-main.625553e4.js",
     "runtime-main.js.map": "/vee-table/static/js/runtime-main.625553e4.js.map",
-    "static/js/2.0d1baeb4.chunk.js": "/vee-table/static/js/2.0d1baeb4.chunk.js",
-    "static/js/2.0d1baeb4.chunk.js.map": "/vee-table/static/js/2.0d1baeb4.chunk.js.map",
+    "static/js/2.af1486cf.chunk.js": "/vee-table/static/js/2.af1486cf.chunk.js",
+    "static/js/2.af1486cf.chunk.js.map": "/vee-table/static/js/2.af1486cf.chunk.js.map",
     "index.html": "/vee-table/index.html",
     "static/css/main.e2521e86.chunk.css.map": "/vee-table/static/css/main.e2521e86.chunk.css.map",
-    "static/js/2.0d1baeb4.chunk.js.LICENSE.txt": "/vee-table/static/js/2.0d1baeb4.chunk.js.LICENSE.txt",
-    "static/js/main.41899b01.chunk.js.LICENSE.txt": "/vee-table/static/js/main.41899b01.chunk.js.LICENSE.txt"
+    "static/js/2.af1486cf.chunk.js.LICENSE.txt": "/vee-table/static/js/2.af1486cf.chunk.js.LICENSE.txt",
+    "static/js/main.db87fe8e.chunk.js.LICENSE.txt": "/vee-table/static/js/main.db87fe8e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.625553e4.js",
-    "static/js/2.0d1baeb4.chunk.js",
+    "static/js/2.af1486cf.chunk.js",
     "static/css/main.e2521e86.chunk.css",
-    "static/js/main.41899b01.chunk.js"
+    "static/js/main.db87fe8e.chunk.js"
   ]
 }
