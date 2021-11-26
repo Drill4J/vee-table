@@ -1,0 +1,28 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug github-action",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}\\packages\\github-action\\build\\index.js",
+      "env": {
+        "INPUT_GITHUB-ACCESS-TOKEN": "!!provide personal access token!!",
+        "INPUT_ACTION-TYPE": "add-version",
+
+        "INPUT_LEDGER-REPO-URL": "https://github.com/Drill4J/vee_ledger",
+        "INPUT_LEDGER-REPO-OWNER": "Drill4J",
+        "INPUT_LEDGER-REPO-NAME": "vee-ledger",
+        
+        "INPUT_VERSION-COMPONENT-ID": "foo-bar",
+        "INPUT_VERSION-TAG": "0.0.1",
+      }
+    }
+  ]
+}

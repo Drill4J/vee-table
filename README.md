@@ -68,3 +68,28 @@ Check out the ["How It Works"](./HOW_IT_WORKS.md) for more detailed explanation 
      }
    }
    ```
+
+### Debug github action
+
+> Prerequisite: VS-code (one may use another editor, but then vscode debug config won't apply)
+
+1. Temporarily add the following line to [./packages/github-action/package.json](./packages/github-action/package.json)
+
+   ```json
+      ...
+      "type":"module",
+      ...
+   ```
+
+2. Set breakpoints in [./packages/github-action/build/index.js](./packages/github-action/build/index.js)
+
+   > TIP: you can also debug `ledger` package right there, as it's bundled with the action's code
+
+3. Open [.vscode/launch.json](.vscode/launch.json) and edit "env" for "Debug github-action" configuration
+
+   - Make sure to set `INPUT_GITHUB-ACCESS-TOKEN` variable (GitHub personal access token will work)
+   - !!Don't commit **YOUR** personal access token!! It's going to be available for the whole world
+
+4. Once you're done don't forget:
+   - to remove `"type": "module"` line from package.json. Otherwise `build` command will fail
+   - to remove `INPUT_GITHUB-ACCESS-TOKEN` from [.vscode/launch.json](.vscode/launch.json)
