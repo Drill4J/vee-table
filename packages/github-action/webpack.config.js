@@ -4,7 +4,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 const config = {
   target: 'node',
-  externals: [nodeExternals()],
+  // externals: [nodeExternals()],
   entry: './src/index.ts',
   module: {
     rules: [
