@@ -35,7 +35,7 @@ async function main() {
       },
     });
 
-    await ledger.connected;
+    await ledger.connected();
 
     switch (actionType) {
       case ACTION_TYPES.ADD_VERSION: {
