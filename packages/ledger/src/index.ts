@@ -135,6 +135,9 @@ export class Ledger {
     if (response.status !== 200) {
       throw new Error(`Failed to update ledger data: ${response.data.error}`);
     }
+
+    (this.data as any) = newData;
+    this.sha = response.data.content.sha;
   }
 
   private deserialize(rawData: any): LedgerData {
