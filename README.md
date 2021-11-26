@@ -13,6 +13,29 @@ This is a monorepo for all stuff related to that task.
 
 Check out the ["How It Works"](./HOW_IT_WORKS.md) for more detailed explanation of inner-workings.
 
+## github-action hack
+
+the actual `action.yml` used by github is placed in **project root**
+**Q: why?** A: github cannot see action.yml in subfolders. It is possible to make it "more obvious". Create a script to:
+
+1. Create a separate branch github-action
+2. Commit packages/github-action/build folder to the root
+3. Tag it with the appropriate tag (btw it could be something odd like `gh-0.0.0` to distinguish from "normal" tags)
+
+Then use that tag reference in workflow files as usual (`uses: Drill4j/vee-table@gh-0.0.0`)
+
+script sketch:
+
+```shell
+   branch -d github-action
+   git add --force packages/github-action/build # force option is required since normally build _should_ be .gitignore-d
+   switch --orphan github-action
+   mv packages/github-action/build . # this actually does not work "as intended" because build folder is preserved, not "unpacked" in root
+   npm version # patch, minor, major, whatever
+   git tag # use package.json version field
+   git commit -m "new branch version"
+```
+
 ## Development
 
 **Prerequisite**: This project assumes you've installed [Lerna](https://github.com/lerna/lerna) globally (`npm i -g lerna`)
@@ -25,13 +48,15 @@ Check out the ["How It Works"](./HOW_IT_WORKS.md) for more detailed explanation 
    npm run install-deps
    ```
 
-2. Make a production build
+2. Make a production build (all packages at once)
 
    ```shell
    npm run build
    ```
 
-### Making changes
+> TIP: you absolutely _can_ build a single package, just navigate to package folder and call build script manually
+
+### Dependency management
 
 1. Run in development mode (launches "start" script for each package)
 
@@ -93,3 +118,56 @@ Check out the ["How It Works"](./HOW_IT_WORKS.md) for more detailed explanation 
 4. Once you're done don't forget:
    - to remove `"type": "module"` line from package.json. Otherwise `build` command will fail
    - to remove `INPUT_GITHUB-ACCESS-TOKEN` from [.vscode/launch.json](.vscode/launch.json)
+
+## Publish
+
+**! FIRST STEP !** - install dependencies by running the following command in **root** project directory
+
+```shell
+lerna bootstrap
+```
+
+If you do not install dependencies in such a way, packages do not get hoisted, and depending on the level of responsibility of previous developers, you may end up with missing packages.
+
+### Ledger
+
+Ledger is not really "published" to NPM or any other registry. You build it and then bundle with other packages (UI, github-action)
+
+You have to prepare it with
+
+```shell
+   lerna run publish --scope=@drill4j
+```
+
+It's `build` folder and `package.json` are bundled with during **build processes of** UI and github-action
+
+### UI
+
+```shell
+lerna run deploy --scope=@drill4j/vee-ui
+```
+
+### Github Action
+
+1. Build action with
+
+   ```shell
+   lerna run build --scope=@drill4j/vee-github-action
+   ```
+
+2. Commit and push updated build `packages/github-action/build` as usual
+
+   ```shell
+      git add .
+      git commit -m "my message"
+      git push origin main
+   ```
+
+3. Set the appropriate tag and publish it to remote
+
+   ```shell
+      git tag *new tag*
+      git push --tags
+   ```
+
+> TIP/WORKAROUND: you can use `packages/github-action/retag.sh` to move `0.0.0` tag to current commit, to avoid necessity to update action version in workflows using it

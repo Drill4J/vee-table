@@ -12,8 +12,7 @@
     "start": "set NODE_ENV=development&& npx webpack --config webpack.config.js",
     "build": "npx webpack --config webpack.config.js",
     "lint": "eslint . --ext .ts --fix",
-    "prepublish": "npm i --force && npm run build && npm prune --production && rm -f npm-shrinkwrap.json && npm shrinkwrap",
-    "publish": "npm publish"
+    "publish-lib": "npm i --force && npm run build && npm prune --production && rm -f npm-shrinkwrap.json && npm shrinkwrap"
   },
   "dependencies": {
     "@octokit/core": "^3.5.1",
@@ -21,6 +20,7 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
+    "@types/node": "^16.11.7",
     "@octokit/types": "^6.34.0",
     "copy-webpack-plugin": "^6.3.2",
     "ts-loader": "^8.3.0",
