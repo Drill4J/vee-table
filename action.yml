@@ -36,4 +36,4 @@ inputs:
     required: false
 runs:
   using: 'node12'
-  main: './packages/github-action/index.js'
+  main: 'packages/github-action/index.js'

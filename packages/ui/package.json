@@ -2,7 +2,7 @@
   "name": "@drill4j/vee-ui",
   "version": "0.0.0",
   "private": true,
-  "homepage": "https://github.com/Drill4J/vee-table",
+  "homepage": "https://drill4j.github.io/vee-table",
   "author": "github.com/RomanDavlyatshin",
   "license": "Apache-2.0",
   "dependencies": {
