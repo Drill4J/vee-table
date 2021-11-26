@@ -111,7 +111,7 @@ export default function VersionTable(props: VersionTableProps) {
             ))}
           </thead>
           {/* Apply the table body props */}
-          {/* <tbody {...getTableBodyProps()}>
+          <tbody {...getTableBodyProps()}>
             {page.map((row: any) => {
               prepareRow(row);
               return (
@@ -122,7 +122,7 @@ export default function VersionTable(props: VersionTableProps) {
                 </T.Tr>
               );
             })}
-          </tbody> */}
+          </tbody>
         </S.Table>
       </S.ScrollXWrapper>
       <Pagination tableInstance={tableInstance} />
