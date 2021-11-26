@@ -16,8 +16,11 @@
 
 // import platform from 'browser-or-node'; // TODO bundle it
 export function platform() {
+  // taken from the 'browser-or-node' lib
   const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-  const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+  const isNode = typeof process !== 'undefined' && process.versions != null;
+  // && process.versions.node != null; // TODO find out why process.versions is empty object
+
   return { isBrowser, isNode };
 }
 
