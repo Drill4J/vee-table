@@ -31,6 +31,9 @@ inputs:
   test-status:
     description: 'Test status'
     required: false
+  test-description:
+    description: 'Test description'
+    required: false
   test-component-version-map:
     description: 'Stringified JSON object that contains key-values for each "componentId":"versionTag". It must be exhaustive'
     required: false

@@ -13,6 +13,7 @@ const INPUT_KEYS = {
 
   TEST_SETUP_ID: 'test-setup-id',
   TEST_STATUS: 'test-status',
+  TEST_DESCRIPTION: 'test-description',
   TEST_COMPONENT_VERSION_MAP: 'test-component-version-map',
 };
 const ACTION_TYPES = {
@@ -48,9 +49,10 @@ async function main() {
       case ACTION_TYPES.ADD_TEST_RESULT: {
         const setupId = core.getInput(INPUT_KEYS.TEST_SETUP_ID);
         const status = core.getInput(INPUT_KEYS.TEST_STATUS);
+        const description = core.getInput(INPUT_KEYS.TEST_DESCRIPTION);
         const versionsStr = core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP);
         const componentVersionMap = JSON.parse(versionsStr);
-        await ledger.addTest({ setupId, status, componentVersionMap });
+        await ledger.addTest({ setupId, status, componentVersionMap, description });
         console.log(`SUCCESS: Added test result ${setupId} - ${status}. Versions:\n${versionsStr}`);
         break;
       }
