@@ -89,8 +89,6 @@ export default function VersionTable(props: VersionTableProps) {
               <>
                 <T.Tr {...{ ...headerGroup.getHeaderGroupProps(), key: `headerGroup_0_${i}` }}>
                   {headerGroup.headers.map(column => {
-                    const pr = column.getHeaderProps();
-                    console.log('pr', pr);
                     return (
                       <T.Td {...column.getHeaderProps()}>
                         <div>{(column as any).Latest && column.render('Latest')}</div>
