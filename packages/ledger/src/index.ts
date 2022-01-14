@@ -394,23 +394,4 @@ export class Ledger {
     platform().isBrowser && alert(msg);
     !platform().isBrowser && console.warn(msg);
   }
-
-  // Communication with e2e
-
-  public async startTestForComponent(componentId: string, versions: RawVersion[]) {
-    const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
-      method: "POST",
-      body: JSON.stringify({
-        event_type: "run_test_for_component",
-        componentId,
-        versions
-      }),
-      headers: {
-        "Authorization": `Bearer ${this.auth}`
-      }
-    })
-    if (response.ok) {
-      throw new Error(`Failed to start test: ${response.status}`);
-    }
-  }
 }

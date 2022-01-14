@@ -21,13 +21,11 @@ import VersionsSelect from '../versions-select'
 import { useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
+import connection from '../../github/connection';
 
 
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
-  if (!Array.isArray(props.data.setups) || props.data.setups.length === 0) {
-    return <Spinner>No available setups. Create setups first</Spinner>;
-  }
   const {components, setups} = props.data;
   const [componentSetups, setComponentSetups] = useState(setups);
   const [setupsRequiredComponents, setSetupsRequiredComponents] = useState<string[]>([]);
@@ -37,16 +35,22 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
       <h3>Start tests for component</h3>
       <Formik
         initialValues={{ componentId: '', componentsVersions: {} }}
-        onSubmit={async ({ componentId, componentsVersions }, {setSubmitting}) => {
-          try {
-            const versions = Object.entries(componentsVersions).map(([componentId = '', tag = '']) => ({componentId, tag} as RawVersion));
-            await props.ledger.startTestForComponent(componentId, versions);
-          } catch (e) {
-            alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
-          } finally {
-            setSubmitting(false);
+        onSubmit={async ({ componentId, componentsVersions }) => {
+          const versions = Object.entries(componentsVersions).map(([componentId = '', tag = '']) => ({componentId, tag} as RawVersion));
+          const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
+            method: "POST",
+            body: JSON.stringify({
+              event_type: "run_test_for_component",
+              componentId,
+              versions
+            }),
+            headers: {
+              "Authorization": `Bearer ${connection.getAuthToken()}`
+            }
+          })
+          if (!response.ok) {
+            alert(`Failed to start test: ${response.status}`);
           }
-          console.log(componentsVersions, componentId)
         }}
       >
         {({ isSubmitting, values,  }) => (
@@ -68,19 +72,13 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             <ErrorMessage name="componentId" component="div" />
 
             {values.componentId &&
-              <>
                 <ul>
                   Running setups:
-                  {
-                    componentSetups.filter(({ componentIds }) => componentIds.includes(values.componentId))
-                      .map(({ id }) => <li>{id}</li>)
-                  }
+                  { componentSetups.map(({ id }) => <li>{id}</li>) }
                 </ul>
-                <label htmlFor="add-test-field-status">Component Versions</label>
-                <VersionsSelect componentIds={setupsRequiredComponents} ledger={props.ledger} fieldNamePrefix={'componentsVersions'}/>
-              </>
             }
-
+            <label htmlFor="add-test-field-status">Component Versions</label>
+            <VersionsSelect componentIds={setupsRequiredComponents} ledger={props.ledger} fieldNamePrefix={'componentsVersions'}/>
             <button type="submit" disabled={isSubmitting}>
               Submit
             </button>
@@ -91,5 +89,3 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
     </>
   );
 };
-
-
