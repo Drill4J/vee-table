@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import SelectField from './generic/select-field';
-import Spinner from '../spinner';
 import { LedgerData } from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
 import { useEffect, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
-import { RawVersion, Setup } from '@drill4j/vee-ledger/src/types-internal';
 import connection from '../../github/connection';
 
 interface AutotestsSetup {
@@ -49,7 +47,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
     <>
       <h3>Start tests for component</h3>
       <Formik
-        initialValues={{setupId: '', isCustomAutotestParams: false, componentsVersions: {}, params: {}}}
+        initialValues={{setupId: '', isCustomParams: {}, componentsVersions: {}, params: {}}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
           const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
             method: "POST",
@@ -96,36 +94,41 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 };
 
 function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups: Record<string, AutotestsSetup>}) {
+  const params = autotestsSetups[values.setupId].params.reduce((acc: Record<string, string[]>, params) => {
+    Object.entries(params).forEach(([name, value]) => {
+      if(acc[name]) {
+        acc[name] = [...acc[name], value];
+      }else {
+        acc[name] = [value]
+      }
+    })
+    return acc;
+  }, {})
+
   return <>
-    <div style={{display: 'flex', gap: "8px", alignItems: 'center'}}>
-      <label htmlFor='start-setups-custom-params-checkbox'>Custom autotest params</label>
-      <Field
-        id={'start-setups-custom-params-checkbox'}
-        name={'isCustomAutotestParams'}
-        type={'checkbox'}
-      />
-    </div>
-    {/*I don't map it because now there are only two parameters*/}
-    {/*TODO map params*/}
-    <label htmlFor='start-setups-params'>Autotests params</label>
-    {values.isCustomAutotestParams ?
-      <Field
-        id={'start-setups-params'}
-        name={'params.autotestsParams'}
-        type={'text'}
-      /> :
-      <Field
-        id={'start-setups-params'}
-        name={'params.autotestsParams'}
-        component={SelectField()}
-        options={autotestsSetups[values.setupId].params.map(({autotestsParams}) => ({ value: autotestsParams, label: autotestsParams }))}
-      />}
-    <label htmlFor="start-setups-fixture-file">Fixture file (the file name must contain the framework name)</label>
-    <Field
-      id={'start-setups-fixture-file'}
-      name={'params.fixtureFile'}
-      component={SelectField()}
-      options={autotestsSetups[values.setupId].params.map(({fixtureFile}) => ({ value: fixtureFile, label: fixtureFile }))}
-    />
+    {Object.entries(params).map(([name, paramValues]) =>
+      <div style={{display: 'flex', flexDirection: "column"}}>
+        <div style={{display: 'flex', gap: "8px", alignItems: 'center'}}>
+          <label htmlFor={`${name}-custom-params-checkbox`}>Custom {name} param</label>
+          <Field
+            id={`${name}-custom-params-checkbox`}
+            name={`isCustomParams.${name}`}
+            type={'checkbox'}
+          />
+        </div>
+        <label htmlFor={`${name}-param`}>Param: {name}</label>
+        {values.isCustomParams[name] ?
+          <Field
+            id={`${name}-param`}
+            name={`params.${name}`}
+            type={'text'}
+          /> :
+          <Field
+            id={'start-setups-params'}
+            name={`params.${name}`}
+            component={SelectField()}
+            options={paramValues.map((param) => ({ value: param, label: param }))}
+          />}
+      </div>)}
   </>
 }
