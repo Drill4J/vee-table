@@ -49,24 +49,28 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
       <Formik
         initialValues={{setupId: '', isCustomParams: {}, componentsVersions: {}, params: {}}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
-          const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
-            method: "POST",
-            body: JSON.stringify({
-              event_type: "run_setup",
-              client_payload: {
-                versions: componentsVersions,
-                params,
-                setupId,
-                cypressEnv: autotestsSetups[setupId].cypressEnv,
-                specFile: autotestsSetups[setupId].file,
+          try {
+            const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
+              method: "POST",
+              body: JSON.stringify({
+                event_type: "run_setup",
+                client_payload: {
+                  versions: componentsVersions,
+                  params,
+                  setupId,
+                  cypressEnv: autotestsSetups[setupId].cypressEnv,
+                  specFile: autotestsSetups[setupId].file,
+                }
+              }),
+              headers: {
+                "Authorization": `Bearer ${connection.getAuthToken()}`
               }
-            }),
-            headers: {
-              "Authorization": `Bearer ${connection.getAuthToken()}`
+            })
+            if (!response.ok) {
+              alert(`Failed to start setup: ${response.status}`);
             }
-          })
-          if (!response.ok) {
-            alert(`Failed to start setup: ${response.status}`);
+          }catch (e) {
+            alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
           }
         }}
       >

@@ -15,7 +15,6 @@
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import SelectField from './generic/select-field';
-import Spinner from '../spinner';
 import { LedgerData } from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
 import { useState } from 'react';
@@ -36,20 +35,24 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
       <Formik
         initialValues={{ componentId: '', componentsVersions: {} }}
         onSubmit={async ({ componentId, componentsVersions }) => {
-          const versions = Object.entries(componentsVersions).map(([componentId = '', tag = '']) => ({componentId, tag} as RawVersion));
-          const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
-            method: "POST",
-            body: JSON.stringify({
-              event_type: "run_test_for_component",
-              componentId,
-              versions
-            }),
-            headers: {
-              "Authorization": `Bearer ${connection.getAuthToken()}`
+          try {
+            const versions = Object.entries(componentsVersions).map(([componentId = '', tag = '']) => ({componentId, tag} as RawVersion));
+            const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
+              method: "POST",
+              body: JSON.stringify({
+                event_type: "run_test_for_component",
+                componentId,
+                versions
+              }),
+              headers: {
+                "Authorization": `Bearer ${connection.getAuthToken()}`
+              }
+            })
+            if (!response.ok) {
+              alert(`Failed to start test: ${response.status}`);
             }
-          })
-          if (!response.ok) {
-            alert(`Failed to start test: ${response.status}`);
+          }catch (e) {
+            alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
           }
         }}
       >
@@ -59,7 +62,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             <Field
               id="start-setups-for-component-id"
               name={'componentId'}
-              component={SelectField(async (componentId: string, form) => {
+              component={SelectField(async (componentId: string) => {
                 const filteredSetups = setups.filter(({ componentIds }) => componentIds.includes(componentId));
                 const setupsComponents = Array.from(new Set(
                   Object.values(filteredSetups)
