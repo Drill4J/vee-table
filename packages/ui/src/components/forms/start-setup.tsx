@@ -106,6 +106,7 @@ function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups:
       />
     </div>
     {/*I don't map it because now there are only two parameters*/}
+    {/*TODO map params*/}
     <label htmlFor='start-setups-params'>Autotests params</label>
     {values.isCustomAutotestParams ?
       <Field
