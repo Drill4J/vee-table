@@ -30,6 +30,7 @@ interface AutotestsSetup {
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const {setups} = props.data;
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
+  const [componentIds, setComponentIds] = useState<string[]>([]);
 
   useEffect(() => {
     (async() => {
@@ -80,12 +81,18 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             <Field
               id="start-setup-setup-id"
               name={'setupId'}
-              component={SelectField()}
+              component={SelectField(async (setupId, form) => {
+                const ids = setups.find(({id}) =>  setupId === id)?.componentIds || [];
+                const latestVersion = props.ledger.getComponentsLatestVersions(ids);
+
+                form.setFieldValue("componentsVersions",latestVersion.reduce((acc, {componentId, tag}) => ({...acc, [componentId]: tag}), {}))
+                setComponentIds(ids)
+              })}
               options={Object.entries(autotestsSetups).map(([id]) => ({ value: id, label: id }))}
             />
             { values.setupId && <FormSetParams values={values} autotestsSetups={autotestsSetups}/>}
             <label htmlFor="add-test-field-status">Component Versions</label>
-            <VersionsSelect componentIds={setups.find(({id}) =>  values.setupId === id)?.componentIds || []} ledger={props.ledger} fieldNamePrefix={'componentsVersions'}/>
+            <VersionsSelect componentIds={componentIds} ledger={props.ledger} fieldNamePrefix={'componentsVersions'}/>
             <button type="submit" disabled={isSubmitting}>
               Submit
             </button>

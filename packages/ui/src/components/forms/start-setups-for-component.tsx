@@ -62,11 +62,15 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             <Field
               id="start-setups-for-component-id"
               name={'componentId'}
-              component={SelectField(async (componentId: string) => {
+              component={SelectField(async (componentId: string, form) => {
                 const filteredSetups = setups.filter(({ componentIds }) => componentIds.includes(componentId));
                 const setupsComponents = Array.from(new Set(
                   Object.values(filteredSetups)
                     .reduce((acc: string[], {componentIds}) => [...acc, ...componentIds], [])));
+
+                const latestVersion = props.ledger.getComponentsLatestVersions(setupsComponents);
+                form.setFieldValue("componentsVersions",latestVersion.reduce((acc, {componentId, tag}) => ({...acc, [componentId]: tag}), {}))
+
                 setComponentSetups(filteredSetups);
                 setSetupsRequiredComponents(setupsComponents)
               })}
