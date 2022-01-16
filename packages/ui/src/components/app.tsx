@@ -28,6 +28,7 @@ import FormAddVersion from './forms/add-version';
 import FormAddTest from './forms/add-test';
 import FormStartSetupsForComponent from './forms/start-setups-for-component';
 import FormStartSetup from './forms/start-setup';
+import FormStartAllSetups from './forms/start-all-setups';
 import VersionTable from './tables/version';
 import ElapsedTimer from './elapsed-timer';
 import SetupTestsTable from './tables/setup-tests';
@@ -115,6 +116,9 @@ function RenderStuff() {
         </div>
         <div className="col-12 col-md-6 col-xl-3">
           <FormStartSetup ledger={ledger} data={data} />
+        </div>
+        <div className="col-12 col-md-6 col-xl-3">
+          <FormStartAllSetups ledger={ledger} data={data} />
         </div>
       </div>
     </div>

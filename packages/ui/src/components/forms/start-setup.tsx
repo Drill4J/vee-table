@@ -46,7 +46,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 
   return (
     <>
-      <h3>Start tests for component</h3>
+      <h3>Start setup</h3>
       <Formik
         initialValues={{setupId: '', isCustomParams: {}, componentsVersions: {}, params: {}}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
