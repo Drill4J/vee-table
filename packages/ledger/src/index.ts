@@ -326,7 +326,7 @@ export class Ledger {
     return components;
   }
 
-  private getSetupById(setupId: string) {
+  public getSetupById(setupId: string) {
     return this.data.setups.find((x: Setup) => x.id === setupId);
   }
 

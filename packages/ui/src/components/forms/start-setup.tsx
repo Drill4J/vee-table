@@ -15,11 +15,12 @@
  */
 import { Formik, Form, Field } from 'formik';
 import SelectField from './generic/select-field';
-import { LedgerData } from '@drill4j/vee-ledger';
+import {LedgerData, RawVersion} from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
 import { useEffect, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
-import connection from '../../github/connection';
+import e2e from '../../e2e'
+import {arrToKeyValue, keyValueToArr} from './util';
 
 interface AutotestsSetup {
   file: string;
@@ -28,15 +29,13 @@ interface AutotestsSetup {
 }
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
-  const {setups} = props.data;
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
   const [componentIds, setComponentIds] = useState<string[]>([]);
 
   useEffect(() => {
     (async() => {
       try{
-        const res = await fetch("https://raw.githubusercontent.com/Drill4J/e2e/main/setups.json")
-        const data = await res.json();
+        const data = await e2e.getSetups();
         setAutotestsSetups(data)
       } catch (e) {
         alert('Failed fetch setups from e2e repo: ' + (e as any)?.message || JSON.stringify(e));
@@ -51,26 +50,17 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
         initialValues={{setupId: '', isCustomParams: {}, componentsVersions: {}, params: {}}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
           try {
-            const response = await fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
-              method: "POST",
-              body: JSON.stringify({
-                event_type: "run_setup",
-                client_payload: {
-                  versions: componentsVersions,
-                  params,
-                  setupId,
-                  cypressEnv: autotestsSetups[setupId].cypressEnv,
-                  specFile: autotestsSetups[setupId].file,
-                }
-              }),
-              headers: {
-                "Authorization": `Bearer ${connection.getAuthToken()}`
-              }
+            const response = await e2e.startSetup({
+              versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
+              params,
+              setupId,
+              cypressEnv: autotestsSetups[setupId].cypressEnv,
+              specFile: autotestsSetups[setupId].file,
             })
             if (!response.ok) {
               alert(`Failed to start setup: ${response.status}`);
             }
-          }catch (e) {
+          } catch (e) {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
           }
         }}
@@ -82,10 +72,10 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
               id="start-setup-setup-id"
               name={'setupId'}
               component={SelectField(async (setupId, form) => {
-                const ids = setups.find(({id}) =>  setupId === id)?.componentIds || [];
-                const latestVersion = props.ledger.getComponentsLatestVersions(ids);
+                const ids = props.ledger.getSetupById(setupId).componentIds || [];
+                const latestVersions = props.ledger.getComponentsLatestVersions(ids);
 
-                form.setFieldValue("componentsVersions",latestVersion.reduce((acc, {componentId, tag}) => ({...acc, [componentId]: tag}), {}))
+                form.setFieldValue("componentsVersions", arrToKeyValue('componentId', 'tag')(latestVersions));
                 setComponentIds(ids)
               })}
               options={Object.entries(autotestsSetups).map(([id]) => ({ value: id, label: id }))}
@@ -105,7 +95,9 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 };
 
 function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups: Record<string, AutotestsSetup>}) {
+  console.log(autotestsSetups[values.setupId].params)
   const params = autotestsSetups[values.setupId].params.reduce((acc: Record<string, string[]>, params) => {
+    console.log(params)
     Object.entries(params).forEach(([name, value]) => {
       if(acc[name]) {
         acc[name] = [...acc[name], value];

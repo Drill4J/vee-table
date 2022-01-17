@@ -29,7 +29,7 @@ export default function (props: { ledger: Ledger; componentIds: string[], fieldN
   if (error) return <Alert>{error}</Alert>;
 
   return (
-    <table>
+    <table style={{borderSpacing: "4px", borderCollapse: "separate"}}>
       <tbody>
         {props.componentIds.map(id  => (
           <tr key={id}>
