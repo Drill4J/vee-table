@@ -95,9 +95,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 };
 
 function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups: Record<string, AutotestsSetup>}) {
-  console.log(autotestsSetups[values.setupId].params)
   const params = autotestsSetups[values.setupId].params.reduce((acc: Record<string, string[]>, params) => {
-    console.log(params)
     Object.entries(params).forEach(([name, value]) => {
       if(acc[name]) {
         acc[name] = [...acc[name], value];
