@@ -94,17 +94,20 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
   );
 };
 
+const groupParamsByName = (acc: Record<string, string[]>) => ([name, value]: [string, string] ) => {
+  if(acc[name]) {
+    acc[name] = [...acc[name], value];
+  }else {
+    acc[name] = [value]
+  }
+}
+
 function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups: Record<string, AutotestsSetup>}) {
-  const params = autotestsSetups[values.setupId].params.reduce((acc: Record<string, string[]>, params) => {
-    Object.entries(params).forEach(([name, value]) => {
-      if(acc[name]) {
-        acc[name] = [...acc[name], value];
-      }else {
-        acc[name] = [value]
-      }
-    })
-    return acc;
-  }, {})
+  const params = autotestsSetups[values.setupId]
+    .params.reduce((acc: Record<string, string[]>, params) => {
+      Object.entries(params).forEach(groupParamsByName(acc))
+      return acc;
+    }, {})
 
   return <>
     {Object.entries(params).map(([name, paramValues]) =>
