@@ -20,7 +20,7 @@ import VersionsSelect from '../versions-select'
 import { useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e';
-import {arrToKeyValue, getSetupsComponentsIds, keyValueToArr} from './util';
+import {arrToKeyValue, getUniqueComponentIds, keyValueToArr} from './util';
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const {components, setups} = props.data;
@@ -52,7 +52,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
               name={'componentId'}
               component={SelectField(async (componentId: string, form) => {
                 const setupsForComponent = setups.filter(({ componentIds }) => componentIds.includes(componentId));
-                const setupsComponents = getSetupsComponentsIds(setupsForComponent)
+                const setupsComponents = getUniqueComponentIds(setupsForComponent)
 
                 const latestVersions = props.ledger.getComponentsLatestVersions(setupsComponents);
                 form.setFieldValue("componentsVersions", arrToKeyValue('componentId', 'tag')(latestVersions))

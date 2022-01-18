@@ -19,11 +19,11 @@ import VersionsSelect from '../versions-select'
 import { useMemo } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e';
-import {getSetupsComponentsIds, keyValueToArr} from './util';
+import {getUniqueComponentIds, keyValueToArr} from './util';
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const { setups} = props.data;
-  const componentIds = useMemo(() => getSetupsComponentsIds(setups), [setups])
+  const componentIds = useMemo(() => getUniqueComponentIds(setups), [setups])
   const latestVersions = useMemo(() => props.ledger.getComponentsLatestVersions(componentIds).reduce((acc, {componentId, tag}) => ({...acc, [componentId]: tag}), {}), [componentIds])
 
   return (

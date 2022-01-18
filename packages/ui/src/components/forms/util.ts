@@ -30,6 +30,6 @@ export const keyValueToArr = (keyName: string, valueName: string) => (data: Reco
 
 export const arrToKeyValue = (key: string, value: string) => (data: any[]) => data.reduce((acc, item) => ({ ...acc, [item[key]]: item[value] }), {})
 
-export const getSetupsComponentsIds = (setups: Setup[]) => Array.from(new Set( // unique elements
+export const getUniqueComponentIds = (setups: Setup[]) => Array.from(new Set(
   Object.values(setups)
     .reduce((acc, {componentIds}) => [...acc, ...componentIds], [] as string[])))
