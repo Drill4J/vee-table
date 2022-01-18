@@ -13,10 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { startAllSetups } from './start-all-setups';
-import { startSetup } from './start-setup';
-import { startSetupsForComponent } from './start-setups-for-component';
-import { getSetups } from './get-setups';
+import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
+import connection from '../github/connection';
+
+export const getSetups =  async () =>  {
+  const res = await fetch("https://raw.githubusercontent.com/Drill4J/e2e/main/setups.json")
+  if(!res.ok) {
+    throw new Error(res.statusText)
+  }
+  return await res.json();
+}
+
+interface StartSetupsForComponentPayload {
+  versions: RawVersion[];
+  componentId: string;
+}
+
+interface StartAllSetupsPayload {
+  versions: RawVersion[];
+}
+
+interface StartSetupPayload {
+  versions: RawVersion[];
+  params: Record<string, string>;
+  setupId: string;
+  cypressEnv: Record<string, string>;
+  specFile: string;
+}
+
+const startSetupsForComponent = async (payload: StartSetupsForComponentPayload) => {
+  return dispatchToE2e({
+    event_type: "run_test_for_component",
+    client_payload: payload
+  })
+}
+
+const startSetup =  async (payload: StartSetupPayload) => {
+  return dispatchToE2e({
+    event_type: "run_setup",
+    client_payload: payload
+  })
+}
+
+const startAllSetups = async (payload: StartAllSetupsPayload) => {
+  return dispatchToE2e({
+    event_type: "run_all_setups",
+    client_payload: payload
+  })
+}
+
+function dispatchToE2e(body: any) {
+  return fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "Authorization": `Bearer ${connection.getAuthToken()}`
+    }
+  })
+}
 
 export default {
   startAllSetups,
