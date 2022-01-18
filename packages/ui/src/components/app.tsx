@@ -111,13 +111,13 @@ function RenderStuff() {
         </div>
       </div>
       <div className="row mt-5">
-        <div className="col-12 col-md-6 col-xl-3">
+        <div className="col-12 col-md-6 col-xl-4">
           <FormStartSetupsForComponent ledger={ledger} data={data} />
         </div>
-        <div className="col-12 col-md-6 col-xl-3">
+        <div className="col-12 col-md-6 col-xl-4">
           <FormStartSetup ledger={ledger} data={data} />
         </div>
-        <div className="col-12 col-md-6 col-xl-3">
+        <div className="col-12 col-md-6 col-xl-4">
           <FormStartAllSetups ledger={ledger} data={data} />
         </div>
       </div>
