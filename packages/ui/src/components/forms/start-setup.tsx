@@ -17,7 +17,7 @@ import { Formik, Form, Field } from 'formik';
 import SelectField from './generic/select-field';
 import {LedgerData, RawVersion} from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e'
 import {arrToKeyValue, keyValueToArr} from './util';
@@ -47,12 +47,12 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
     <>
       <h3>Start setup</h3>
       <Formik
-        initialValues={{setupId: '', isCustomParams: {}, componentsVersions: {}, params: {}}}
+        initialValues={{setupId: '', isCustomParams: false, componentsVersions: {}, params: ''}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
           try {
             const response = await e2e.startSetup({
               versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
-              params,
+              params: JSON.parse(params),
               setupId,
               cypressEnv: autotestsSetups[setupId].cypressEnv,
               specFile: autotestsSetups[setupId].file,
@@ -72,7 +72,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
               id="start-setup-setup-id"
               name={'setupId'}
               component={SelectField(async (setupId, form) => {
-                const ids = props.ledger.getSetupById(setupId).componentIds || [];
+                const ids = props.ledger.getSetupById(setupId)?.componentIds || [];
                 const latestVersions = props.ledger.getComponentsLatestVersions(ids);
 
                 form.setFieldValue("componentsVersions", arrToKeyValue('componentId', 'tag')(latestVersions));
@@ -94,45 +94,36 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
   );
 };
 
-const groupParamsByName = (acc: Record<string, string[]>) => ([name, value]: [string, string] ) => {
-  if(acc[name]) {
-    acc[name] = [...acc[name], value];
-  } else {
-    acc[name] = [value]
-  }
-}
-
 function FormSetParams({values, autotestsSetups}: {values: any; autotestsSetups: Record<string, AutotestsSetup>}) {
-  const params = autotestsSetups[values.setupId]
-    .params.reduce((acc: Record<string, string[]>, params) => {
-      Object.entries(params).forEach(groupParamsByName(acc))
-      return acc;
-    }, {})
+  const options = useMemo(() => autotestsSetups[values.setupId]
+    .params.map((params) => {
+      const str = JSON.stringify(params,undefined, 2); // prettify json in textarea
+      return {value: str, label: str}
+    }), [autotestsSetups, values.setupId])
 
   return <>
-    {Object.entries(params).map(([name, paramValues]) =>
-      <div style={{display: 'flex', flexDirection: "column"}}>
-        <div style={{display: 'flex', gap: "8px", alignItems: 'center'}}>
-          <label htmlFor={`${name}-custom-params-checkbox`}>Custom {name} param</label>
-          <Field
-            id={`${name}-custom-params-checkbox`}
-            name={`isCustomParams.${name}`}
-            type={'checkbox'}
-          />
-        </div>
-        <label htmlFor={`${name}-param`}>Param: {name}</label>
-        {values.isCustomParams[name] ?
-          <Field
-            id={`${name}-param`}
-            name={`params.${name}`}
-            type={'text'}
-          /> :
-          <Field
-            id={'start-setups-params'}
-            name={`params.${name}`}
-            component={SelectField()}
-            options={paramValues.map((param) => ({ value: param, label: param }))}
-          />}
-      </div>)}
+    <div style={{display: 'flex', flexDirection: "column"}}>
+      <div style={{display: 'flex', gap: "8px", alignItems: 'center'}}>
+        <label htmlFor={`custom-params-checkbox`}>Custom params</label>
+        <Field
+          id={`custom-params-checkbox`}
+          name={`isCustomParams`}
+          type={'checkbox'}
+        />
+      </div>
+      <label htmlFor={`params`}>Params</label>
+      {values.isCustomParams ?
+        <Field
+          id={`params`}
+          name={`params`}
+          as={'textarea'}
+        /> :
+        <Field
+          id={'start-setups-params'}
+          name={`params`}
+          component={SelectField()}
+          options={options}
+        />}
+    </div>
   </>
 }
