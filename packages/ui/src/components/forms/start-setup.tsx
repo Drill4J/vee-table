@@ -97,7 +97,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 const groupParamsByName = (acc: Record<string, string[]>) => ([name, value]: [string, string] ) => {
   if(acc[name]) {
     acc[name] = [...acc[name], value];
-  }else {
+  } else {
     acc[name] = [value]
   }
 }
