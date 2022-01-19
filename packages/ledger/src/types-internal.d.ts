@@ -20,7 +20,14 @@ export type LedgerData = {
   versions: Version[];
   setups: Setup[];
   tests: TestResult[];
+  comments: Record<string, Comment>;
 };
+
+export type Comment = {
+  userName: string;
+  message: string;
+  releaseComponentDate: number;
+}
 
 export type Component = {
   id: string;

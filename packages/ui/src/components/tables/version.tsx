@@ -17,18 +17,22 @@ import React from 'react';
 import { useTable, usePagination } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
-import { Component, Version } from '@drill4j/vee-ledger';
+import AddCommentsCell from './cells/add-comment-cell';
+import { Component, Version, Comment } from '@drill4j/vee-ledger';
 import Question from '../question';
 import { T } from './styles';
 import { ColumnDetails } from './types';
 import { Pagination } from './Pagination';
 import { sortBy } from './util';
 import { Ledger } from '@drill4j/vee-ledger';
+import useUser from '../../github/hooks/use-user'
+import CommentCell from './cells/comment-cell';
 
 type VersionTableProps = {
   components: Component[];
   versions: Version[];
   ledger: Ledger; // FIXME I don't like it
+  comments: Record<string, Comment>
 };
 
 const S = {
@@ -42,7 +46,8 @@ const S = {
 
 const INIT_PAGE_SIZE = 10;
 export default function VersionTable(props: VersionTableProps) {
-  const { components, versions } = props;
+  const { components, versions, ledger, comments } = props;
+  const { data: userData } = useUser()
 
   const data = React.useMemo<ColumnDetails[]>(
     () =>
@@ -64,6 +69,22 @@ export default function VersionTable(props: VersionTableProps) {
         },
       },
       ...components.map(c => ({ Header: c.name, Latest: props.ledger.getLatestVersion(c.id)?.tag || '-', accessor: c.id })),
+      {
+        Header: 'Add Comments',
+        Latest: '',
+        accessor: 'add-comments',
+        Cell: (props: any) => {
+          return <AddCommentsCell releaseComponentDate={props.row.values.release} user={userData} ledger={ledger} comment={comments[props.row.values.release]}/>;
+        },
+      },
+      {
+        Header: 'Comments',
+        Latest: '',
+        accessor: 'comments',
+        Cell: (props: any) => {
+          return <CommentCell comment={comments[props.row.values.release]}/>;
+        }
+      },
     ],
     [], // FIXME
   );
@@ -79,6 +100,7 @@ export default function VersionTable(props: VersionTableProps) {
   if (versions.length === 0) {
     return <div>no versions</div>;
   }
+
 
   return (
     <div>

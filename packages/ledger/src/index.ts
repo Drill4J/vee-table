@@ -27,6 +27,7 @@ import {
   Version,
   ComponentsAvailableVersionsMap,
   TestResult,
+  Comment
 } from './types-internal';
 import { b64_to_utf8, utf8_to_b64, validateNonEmptyString, platform } from './util';
 
@@ -42,6 +43,7 @@ export class Ledger {
     versions: [],
     setups: [],
     tests: [],
+    comments: {}
   };
 
   public data: LedgerData | undefined; // FIXME private
@@ -123,12 +125,16 @@ export class Ledger {
       [property]: [...(this.data as any)[property], value],
     };
 
+    await this.updateLedgerData(property, newData);
+  }
+
+  private async updateLedgerData(property: string, newData: any) {
     // API reference https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
     const response = await (this.octokit as any).request(
       `PUT /repos/${this.ledgerRepo.owner}/${this.ledgerRepo.name}/contents/${this.ledgerFilePath}`,
       {
         message: `new ${property}`,
-        content: this.serialize(newData as any),
+        content: this.serialize(newData),
         sha: this.sha,
       },
     );
@@ -271,6 +277,21 @@ export class Ledger {
     });
   }
 
+  public async addComment({message, releaseComponentDate, userName}: Comment) {
+    if(!releaseComponentDate) {
+      throw new Error('Please please leave the message for published version');
+    }
+    validateNonEmptyString('message', message);
+    validateNonEmptyString('userName', userName);
+
+    const newData: LedgerData = {
+      ...this.data,
+      comments: {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}},
+    };
+    console.log('comments', {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}})
+    return this.updateLedgerData('comments', newData);
+  }
+
   private validateSetupComponentsList(data: RawTestResult, setupComponentIds?: string[]) {
     const inputIds = Object.keys(data.componentVersionMap);
 
@@ -295,6 +316,7 @@ export class Ledger {
       this.warning(errorMsg);
     }
   }
+
 
   // GET
   public getLatestVersion(componentId: string) {

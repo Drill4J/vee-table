@@ -75,7 +75,7 @@ function RenderStuff() {
 
       {/* VERSIONS */}
       <h3 className="mt-3">VERSIONS</h3>
-      <VersionTable versions={data.versions} components={data.components} ledger={ledger} />
+      <VersionTable versions={data.versions} components={data.components} ledger={ledger} comments={data.comments}/>
 
       {/*SETUPS  */}
       <h3 className="mt-3">SETUPS</h3>
