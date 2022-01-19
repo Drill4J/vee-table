@@ -49,6 +49,11 @@ export type Version = RawVersion & {
   date: string;
 };
 
+export type Initiator = {
+  userName?: string;
+  reason: string;
+}
+
 export type RawTestResult = {
   setupId: string;
   status: string;
@@ -56,10 +61,13 @@ export type RawTestResult = {
     [componentId: string]: string;
   };
   description?: string;
+  linkToRun?: string;
+  componentReleased?: RawVersion;
+  initiator: Initiator;
 };
 
 export type TestResult = RawTestResult & {
-  date: string;
+  date: number;
 };
 
 export type ComponentsAvailableVersionsMap = { [componentId: string]: string[] };

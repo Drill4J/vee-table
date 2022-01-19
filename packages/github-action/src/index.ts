@@ -51,8 +51,11 @@ async function main() {
         const status = core.getInput(INPUT_KEYS.TEST_STATUS);
         const description = core.getInput(INPUT_KEYS.TEST_DESCRIPTION);
         const versionsStr = core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP);
+        const componentReleased = JSON.parse(core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP));
+        const initiator = JSON.parse(core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP));
+        const linkToRun = core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP);
         const componentVersionMap = JSON.parse(versionsStr);
-        await ledger.addTest({ setupId, status, componentVersionMap, description });
+        await ledger.addTest({ setupId, status, componentVersionMap, description, componentReleased, initiator, linkToRun });
         console.log(`SUCCESS: Added test result ${setupId} - ${status}. Versions:\n${versionsStr}`);
         break;
       }

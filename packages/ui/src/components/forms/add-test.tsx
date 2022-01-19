@@ -22,6 +22,7 @@ import { Ledger } from '@drill4j/vee-ledger';
 import { startsWith, stripPrefix } from './util';
 import Question from '../question';
 import Alert from '../alert';
+import useUser from '../../github/hooks/use-user';
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   if (!Array.isArray(props.data.setups) || props.data.setups.length === 0) {
@@ -29,6 +30,8 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
   }
   const setups = props.data.setups.map(x => ({ value: x.id, label: x.name }));
   const [components, setComponents] = useState<Component[]>([]);
+  const { data: userData } = useUser()
+
   return (
     <>
       <h3>New test result</h3>
@@ -48,6 +51,10 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
               status,
               componentVersionMap,
               description,
+              initiator: {
+                userName: userData?.name,
+                reason: "Manual publish tests result"
+              }
             });
 
             window.location.reload(); // pro react development
