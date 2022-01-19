@@ -52,7 +52,6 @@ function FormAddComponent({onClose}: {onClose: () => void}) {
     <div className="absolute z-10 bg-shade3">
       <Form className="flex flex-col min-w-[250px]">
         <Field
-          className=""
           id={`message`}
           name={`message`}
           as={'textarea'}

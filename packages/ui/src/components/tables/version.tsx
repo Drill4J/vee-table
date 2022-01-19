@@ -101,7 +101,6 @@ export default function VersionTable(props: VersionTableProps) {
     return <div>no versions</div>;
   }
 
-
   return (
     <div>
       <S.ScrollXWrapper>

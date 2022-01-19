@@ -279,7 +279,7 @@ export class Ledger {
 
   public async addComment({message, releaseComponentDate, userName}: Comment) {
     if(!releaseComponentDate) {
-      throw new Error('Please please leave the message for published version');
+      throw new Error('Please leave the message for published version');
     }
     validateNonEmptyString('message', message);
     validateNonEmptyString('userName', userName);
@@ -288,7 +288,7 @@ export class Ledger {
       ...this.data,
       comments: {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}},
     };
-    console.log('comments', {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}})
+
     return this.updateLedgerData('comments', newData);
   }
 
@@ -316,7 +316,6 @@ export class Ledger {
       this.warning(errorMsg);
     }
   }
-
 
   // GET
   public getLatestVersion(componentId: string) {
