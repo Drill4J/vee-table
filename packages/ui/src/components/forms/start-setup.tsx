@@ -75,7 +75,12 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
                 const ids = props.ledger.getSetupById(setupId)?.componentIds || [];
                 const latestVersions = props.ledger.getComponentsLatestVersions(ids);
 
-                form.setFieldValue("componentsVersions", arrToKeyValue('componentId', 'tag')(latestVersions));
+                form.resetForm({
+                  values: {
+                    componentsVersions: arrToKeyValue('componentId', 'tag')(latestVersions),
+                    setupId
+                  }
+                });
                 setComponentIds(ids)
               })}
               options={Object.entries(autotestsSetups).map(([id]) => ({ value: id, label: id }))}
