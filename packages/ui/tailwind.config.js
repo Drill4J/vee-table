@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './compiled-tailwind.css';
-import './index.css';
-import App from './components/app';
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        white: 'rgb(204, 204, 204)',
+        shade1: `rgb(60, 60, 60)`,
+        shade2: `rgb(45, 45, 45)`,
+        shade3: `rgb(30, 30, 30)`,
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+        green: `rgb(106, 138, 85)`,
+
+        blue1: `rgb(59 75 86)`,
+        blue2: `rgb(61 100 126)`,
+        blue3: `rgb(14 99 156)`,
+
+        yellow: 'rgb(226,180,128)',
+      },
+    }
+  },
+  plugins: [],
+}
