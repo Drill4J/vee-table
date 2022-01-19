@@ -30,7 +30,7 @@ export default function({releaseComponentDate, user, ledger, comment}: Props) {
 
   return(
     <div className="relative">
-      <button onClick={() => setIsOpen(true)}>Add comment</button>
+      <button onClick={() => setIsOpen(true)}>{previousMessage ? "Edit" : "Add"} comment</button>
       {isOpen && (
         <Formik initialValues={{message: previousMessage}} onSubmit={async ({message}) => {
           try {
