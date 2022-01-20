@@ -42,12 +42,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
   const { tests } = props;
   const data = React.useMemo<ColumnDetails[]>(
     () =>
-      tests.sort(sortBy('date')).map(x => ({
-        date: x.date,
-        status: x.status,
-        description: x.description,
-        componentVersionMap: x.componentVersionMap,
-      })),
+      tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
 
@@ -61,22 +56,21 @@ export default function SetupTestsTable(props: VersionTableProps) {
         },
       },
       {
-        Header: 'Description',
-        accessor: 'description',
-        Cell: (props: any) => {
-          const text = props.row.values.description;
-          if (!text) return null;
-          // TODO move it elsewhere
-          const MAX_LEN = 10;
-          if (text.length < MAX_LEN) {
-            return text;
-          }
-          return <NoRender label={`${text.slice(0, 10)}...`}>{text}</NoRender>;
-        },
+        Header: 'Component released',
+        accessor: 'releasedComponent',
+        Cell: (props: any) => props.value ? <span>{props.value?.componentId}: {props.value?.tag}</span> : null
       },
       {
         Header: 'Status',
         accessor: 'status',
+      },
+      {
+        Header: 'Initiator',
+        accessor: 'initiator',
+        Cell: (props: any) => <div>
+          <div>Initiator: {props.value?.userName}</div>
+          <div>Reason: {props.value?.reason}</div>
+        </div>
       },
       {
         Header: 'Versions',
@@ -88,6 +82,11 @@ export default function SetupTestsTable(props: VersionTableProps) {
             </NoRender>
           );
         },
+      },
+      {
+        Header: 'Run',
+        accessor: 'linkToRun',
+        Cell: (props: any) => <a href={props.value} target="_blank" rel="noreferrer">Run details</a>
       },
     ],
     [],

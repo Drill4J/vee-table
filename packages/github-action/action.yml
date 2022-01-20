@@ -37,13 +37,13 @@ inputs:
   test-component-version-map:
     description: 'Stringified JSON object that contains key-values for each "componentId":"versionTag". It must be exhaustive'
     required: false
-  component-released:
+  released-component:
     description: 'Stringified JSON object that contains componentId and tag'
     required: false
   initiator:
     description: 'Stringified JSON object that contains userName of initiator and reason'
     required: false
-  linkToRun:
+  link-to-run:
     description: 'Link to tests run in github'
     required: false
 runs:

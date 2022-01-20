@@ -279,7 +279,7 @@ export class Ledger {
       status: data.status.trim(),
       description: data.description?.trim(),
       linkToRun: data.linkToRun,
-      componentReleased: data.componentReleased,
+      releasedComponent: data.releasedComponent,
       initiator: data.initiator
     });
   }

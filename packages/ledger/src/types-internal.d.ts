@@ -62,7 +62,7 @@ export type RawTestResult = {
   };
   description?: string;
   linkToRun?: string;
-  componentReleased?: RawVersion;
+  releasedComponent?: RawVersion;
   initiator: Initiator;
 };
 
