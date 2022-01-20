@@ -23,7 +23,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "lint:fix": "eslint src --ext tsx --fix",
+    "lint": "eslint src --ext tsx"
   },
   "browserslist": {
     "production": [
@@ -49,12 +51,12 @@
     "@types/styled-components": "^5.1.15",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-drill4j": "^1.0.0",
+    "eslint-plugin-jest": "^25.3.4",
     "gh-pages": "^3.2.3"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ],
     "plugins": [
       "drill4j"

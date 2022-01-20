@@ -26,6 +26,9 @@ import FormAddComponent from './forms/add-component';
 import FormAddSetup from './forms/add-setup';
 import FormAddVersion from './forms/add-version';
 import FormAddTest from './forms/add-test';
+import FormStartSetupsForComponent from './forms/start-setups-for-component';
+import FormStartSetup from './forms/start-setup';
+import FormStartAllSetups from './forms/start-all-setups';
 import VersionTable from './tables/version';
 import ElapsedTimer from './elapsed-timer';
 import SetupTestsTable from './tables/setup-tests';
@@ -59,7 +62,7 @@ function RenderStuff() {
   if (!data) return <Spinner>ledger.json is not initialized. Make sure to follow setup instructions or contact dev team</Spinner>;
 
   return (
-    <div className="px-2">
+    <div className="px-2 pb-4">
       <div>
         Refreshed <ElapsedTimer />
         <ElapsedSinceChange />
@@ -105,6 +108,17 @@ function RenderStuff() {
         </div>
         <div className="col-12 col-md-6 col-xl-3">
           <FormAddTest ledger={ledger} data={data} />
+        </div>
+      </div>
+      <div className="row mt-5">
+        <div className="col-12 col-md-6 col-xl-4">
+          <FormStartSetupsForComponent ledger={ledger} data={data} />
+        </div>
+        <div className="col-12 col-md-6 col-xl-4">
+          <FormStartSetup ledger={ledger} data={data} />
+        </div>
+        <div className="col-12 col-md-6 col-xl-4">
+          <FormStartAllSetups ledger={ledger} data={data} />
         </div>
       </div>
     </div>

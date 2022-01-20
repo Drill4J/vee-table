@@ -326,7 +326,7 @@ export class Ledger {
     return components;
   }
 
-  private getSetupById(setupId: string) {
+  public getSetupById(setupId: string) {
     return this.data.setups.find((x: Setup) => x.id === setupId);
   }
 
@@ -354,6 +354,10 @@ export class Ledger {
       });
 
     return result;
+  }
+
+  public getComponentsLatestVersions(componentIds: string[]): Version[] {
+    return componentIds.map(this.getLatestVersion.bind(this));
   }
 
   // TODO deal with polymorphic function signature phobia

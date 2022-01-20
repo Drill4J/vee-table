@@ -41,7 +41,7 @@ async function getLedgerInstance() {
       owner: String(process.env.REACT_APP_LEDGER_REPO_OWNER),
       name: String(process.env.REACT_APP_LEDGER_REPO_NAME),
     },
-  });  
+  });
   return ledger;
 }
 
@@ -58,6 +58,7 @@ export interface Connector {
   connect: () => void;
   disconnect: () => void;
   isConnected: () => boolean;
+  getAuthToken: () => string;
 }
 
 const connector: Connector = {
@@ -65,6 +66,7 @@ const connector: Connector = {
   connect,
   disconnect,
   isConnected: () => connection.isConnected(),
+  getAuthToken: () => connection.getCookie('github_access_token'),
 };
 
 export default connector;
