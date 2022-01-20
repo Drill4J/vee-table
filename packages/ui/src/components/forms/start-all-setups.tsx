@@ -31,11 +31,13 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
       <h3>Start all setups</h3>
       <Formik
         initialValues={{ componentsVersions: latestVersions }}
-        onSubmit={async ({ componentsVersions }) => {
+        onSubmit={async ({ componentsVersions }, form) => {
           try {
             const response = await e2e.startAllSetups({ versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[] })
             if (!response.ok) {
               alert(`Failed to start tests: ${response.status}`);
+            } else {
+              alert('Tests started successfully');
             }
           } catch (e) {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
