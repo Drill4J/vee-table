@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { usePagination, useTable } from 'react-table';
+import { useFilters, usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
 import { Setup, TestResult } from '@drill4j/vee-ledger';
@@ -37,12 +37,37 @@ const S = {
   `,
 };
 
+function DefaultColumnFilter({
+  column: { filterValue, preFilteredRows, setFilter },
+}: any) {
+  const count = preFilteredRows.length
+
+  return (
+    <div>
+      <input
+        value={filterValue || ''}
+        onChange={e => {
+          setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
+        }}
+        placeholder={`Search ${count} records...`}
+      />
+    </div>
+  )
+}
+
+function filterReleasedComponent(rows: any, _: any, filterValue: any) {
+  return rows.filter((row: any) => {
+    const {componentId, tag} = row.values?.releasedComponent || {};
+    if(!componentId &&  !tag) return false;
+    return `${componentId}: ${tag}` >= filterValue
+  })
+}
+
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
   const { tests } = props;
   const data = React.useMemo<ColumnDetails[]>(
-    () =>
-      tests.sort(sortBy('date')),
+    () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
 
@@ -58,7 +83,9 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Component released',
         accessor: 'releasedComponent',
-        Cell: (props: any) => props.value ? <span>{props.value?.componentId}: {props.value?.tag}</span> : null
+        Cell: (props: any) => props.value ? <span>{props.value?.componentId}: {props.value?.tag}</span> : null,
+        filterable: true,
+        filter: filterReleasedComponent
       },
       {
         Header: 'Status',
@@ -92,7 +119,15 @@ export default function SetupTestsTable(props: VersionTableProps) {
     [],
   );
 
-  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE } } as any, usePagination);
+  const defaultColumn = React.useMemo(
+    () => ({
+      // Let's set up our default Filter UI
+      Filter: DefaultColumnFilter,
+    }),
+    [],
+  );
+
+  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any, useFilters, usePagination);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   const { page }: any = tableInstance;
 
@@ -107,15 +142,18 @@ export default function SetupTestsTable(props: VersionTableProps) {
               <T.Tr {...headerGroup.getHeaderGroupProps()}>
                 {
                   // Loop over the headers in each row
-                  headerGroup.headers.map(column => (
-                    // Apply the header cell props
-                    <T.Th {...column.getHeaderProps()}>
-                      {
-                        // Render the header
-                        column.render('Header')
-                      }
-                    </T.Th>
-                  ))
+                  headerGroup.headers.map((column: any) => {
+                    return (
+                      // Apply the header cell props
+                      <T.Th {...column.getHeaderProps()}>
+                        {
+                          // Render the header
+                          column.render('Header')
+                        }
+                        {column.filterable ? column.render('Filter') : null}
+                      </T.Th>
+                    )
+                  })
                 }
               </T.Tr>
             ))
