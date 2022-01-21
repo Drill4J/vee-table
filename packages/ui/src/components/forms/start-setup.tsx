@@ -72,7 +72,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
       >
         {({ isSubmitting, values,  }) => (
           <Form>
-            <label htmlFor="start-setup-setup-id">Component</label>
+            <label htmlFor="start-setup-setup-id">Setup</label>
             <Field
               id="start-setup-setup-id"
               name={'setupId'}
