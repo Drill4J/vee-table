@@ -64,6 +64,7 @@ export type RawTestResult = {
   linkToRun?: string;
   releasedComponent?: RawVersion;
   initiator: Initiator;
+  testParams?: string;
 };
 
 export type TestResult = RawTestResult & {

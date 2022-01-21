@@ -55,14 +55,6 @@ function DefaultColumnFilter({
   )
 }
 
-function filterReleasedComponent(rows: any, _: any, filterValue: any) {
-  return rows.filter((row: any) => {
-    const {componentId, tag} = row.values?.releasedComponent || {};
-    if(!componentId &&  !tag) return false;
-    return `${componentId}: ${tag}` >= filterValue
-  })
-}
-
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
   const { tests } = props;
@@ -109,6 +101,10 @@ export default function SetupTestsTable(props: VersionTableProps) {
             </NoRender>
           );
         },
+      },
+      {
+        Header: 'Autotest Params',
+        accessor: 'autotestParams',
       },
       {
         Header: 'Run',
@@ -195,4 +191,12 @@ export default function SetupTestsTable(props: VersionTableProps) {
       <Pagination tableInstance={tableInstance} />
     </div>
   );
+}
+
+function filterReleasedComponent(rows: any, _: any, filterValue: string) {
+  return rows.filter((row: any) => {
+    const {componentId, tag} = row.values?.releasedComponent || {};
+    if(!componentId && !tag) return false;
+    return `${componentId}: ${tag}`.includes(filterValue)
+  })
 }

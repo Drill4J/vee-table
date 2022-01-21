@@ -280,7 +280,8 @@ export class Ledger {
       description: data.description?.trim(),
       linkToRun: data.linkToRun,
       releasedComponent: data.releasedComponent,
-      initiator: data.initiator
+      initiator: data.initiator,
+      testParams: data.testParams
     });
   }
 

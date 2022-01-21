@@ -46,6 +46,9 @@ inputs:
   link-to-run:
     description: 'Link to tests run in github'
     required: false
+  test-params:
+    description: 'Autotest params in the setup'
+    required: false
 runs:
   using: 'node12'
   main: 'build/index.js'

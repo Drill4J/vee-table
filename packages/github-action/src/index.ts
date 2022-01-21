@@ -18,6 +18,7 @@ const INPUT_KEYS = {
   RELEASED_COMPONENT: 'released-component',
   INITIATOR: 'initiator',
   LINK_TO_RUN: 'link-to-run',
+  TEST_PARAMS: 'test-params',
 };
 const ACTION_TYPES = {
   ADD_VERSION: 'add-version',
@@ -58,7 +59,8 @@ async function main() {
         const initiator = JSON.parse(core.getInput(INPUT_KEYS.INITIATOR));
         const linkToRun = core.getInput(INPUT_KEYS.LINK_TO_RUN);
         const componentVersionMap = JSON.parse(versionsStr);
-        await ledger.addTest({ setupId, status, componentVersionMap, description, releasedComponent, initiator, linkToRun });
+        const testParams = core.getInput(INPUT_KEYS.TEST_PARAMS);
+        await ledger.addTest({ setupId, status, componentVersionMap, description, releasedComponent, initiator, linkToRun, testParams });
         console.log(`SUCCESS: Added test result ${setupId} - ${status}. Versions:\n${versionsStr}`);
         break;
       }
