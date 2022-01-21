@@ -22,6 +22,8 @@ import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e';
 import {arrToKeyValue, getUniqueComponentIds, keyValueToArr} from './util';
 
+const initialValues = { componentId: '', componentsVersions: {} };
+
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const {components, setups} = props.data;
   const [componentSetups, setComponentSetups] = useState(setups);
@@ -31,13 +33,16 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
     <>
       <h3>Start tests for component</h3>
       <Formik
-        initialValues={{ componentId: '', componentsVersions: {} }}
-        onSubmit={async ({ componentId, componentsVersions }) => {
+        initialValues={initialValues}
+        onSubmit={async ({ componentId, componentsVersions }, form) => {
           try {
             const versions = keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[];
             const response = await e2e.startSetupsForComponent({componentId, versions});
             if (!response.ok) {
               alert(`Failed to start test: ${response.status}`);
+            } else {
+              alert('Setups started successfully');
+              form.resetForm({values: initialValues })
             }
           } catch (e) {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));

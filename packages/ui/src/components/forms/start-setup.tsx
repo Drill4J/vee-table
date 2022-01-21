@@ -28,6 +28,8 @@ interface AutotestsSetup {
   params: Record<string, string>[];
 }
 
+const initialValues = {setupId: '', isCustomParams: false, componentsVersions: {}, params: ''};
+
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
   const [componentIds, setComponentIds] = useState<string[]>([]);
@@ -47,8 +49,8 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
     <>
       <h3>Start setup</h3>
       <Formik
-        initialValues={{setupId: '', isCustomParams: false, componentsVersions: {}, params: ''}}
-        onSubmit={async ({ setupId, componentsVersions, params }) => {
+        initialValues={initialValues}
+        onSubmit={async ({ setupId, componentsVersions, params }, form) => {
           try {
             const response = await e2e.startSetup({
               versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
@@ -59,6 +61,9 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             })
             if (!response.ok) {
               alert(`Failed to start setup: ${response.status}`);
+            } else {
+              alert('Setup started successfully');
+              form.resetForm({values: initialValues })
             }
           } catch (e) {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
