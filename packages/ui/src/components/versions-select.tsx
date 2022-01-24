@@ -15,7 +15,7 @@
  */
 import Spinner from './spinner';
 import Alert from './alert';
-import { Field } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import SelectField from './forms/generic/select-field';
 import { Ledger } from '@drill4j/vee-ledger';
 import useVersions from '../github/hooks/use-versions'
@@ -23,6 +23,7 @@ import useVersions from '../github/hooks/use-versions'
 
 export default function (props: { ledger: Ledger; componentIds: string[], fieldNamePrefix: string }) {
   const { isLoading: isLoadingVersionsData, vers, error } = useVersions(props.componentIds, props.ledger);
+  const { values } = useFormikContext<{isCustomVersion: Record<string, boolean>}>();
 
   if (!Array.isArray(props.componentIds) || props.componentIds.length === 0) return <Spinner>...select setup first</Spinner>;
   if (isLoadingVersionsData) return <Spinner>loading versions</Spinner>;
@@ -39,13 +40,22 @@ export default function (props: { ledger: Ledger; componentIds: string[], fieldN
               </label>
             </td>
             <td>
+              <label htmlFor={`custom-version`} className="mr-2">Custom version</label>
+              <Field
+                id={`custom-version`}
+                name={`isCustomVersion.${id}`}
+                type={'checkbox'}
+              />
+            </td>
+            <td>
               {!Array.isArray(vers[id]) ? (
                 'no versions'
               ) : (
                 <Field
+                  className="w-full h-[38px]"
                   id={`${props.fieldNamePrefix}-${id}`}
                   name={`${props.fieldNamePrefix}.${id}`}
-                  component={SelectField()}
+                  component={values?.isCustomVersion && values?.isCustomVersion[id] ? 'input' : SelectField()}
                   options={vers[id].map(versionTag => ({ value: versionTag, label: versionTag }))}
                 />
               )}
