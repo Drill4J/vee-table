@@ -35,17 +35,17 @@ export default function (props: { ledger: Ledger; componentIds: string[], fieldN
         {props.componentIds.map(id  => (
           <tr key={id}>
             <td>
-              <label style={{ cursor: 'pointer' }} htmlFor={`${props.fieldNamePrefix}-${id}`}>
-                {id}
-              </label>
-            </td>
-            <td>
-              <label htmlFor={`custom-version`} className="mr-2">Custom version</label>
+              <label htmlFor={`custom-version-${id}`} className="mr-2">Custom</label>
               <Field
-                id={`custom-version`}
+                id={`custom-version-${id}`}
                 name={`isCustomVersion.${id}`}
                 type={'checkbox'}
               />
+            </td>
+            <td>
+              <label style={{ cursor: 'pointer' }} htmlFor={`${props.fieldNamePrefix}-${id}`}>
+                {id}
+              </label>
             </td>
             <td>
               {!Array.isArray(vers[id]) ? (
