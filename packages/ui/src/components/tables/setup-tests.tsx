@@ -24,6 +24,7 @@ import { sortBy } from './util';
 import { ColumnDetails } from './types';
 import { T } from './styles';
 import { Pagination } from './Pagination';
+import DefaultColumnFilter from './default-column-filter';
 
 type VersionTableProps = {
   setup: Setup;
@@ -36,24 +37,6 @@ const S = {
     min-width: 100%;
   `,
 };
-
-function DefaultColumnFilter({
-  column: { filterValue, preFilteredRows, setFilter },
-}: any) {
-  const count = preFilteredRows.length
-
-  return (
-    <div>
-      <input
-        value={filterValue || ''}
-        onChange={e => {
-          setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
-        }}
-        placeholder={`Search ${count} records...`}
-      />
-    </div>
-  )
-}
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
@@ -75,7 +58,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Component released',
         accessor: 'releasedComponent',
-        Cell: (props: any) => props.value ? <span>{props.value?.componentId}: {props.value?.tag}</span> : null,
+        Cell: (props: any) => props.value ? <span>{getReleaseComponentCellContent(props.value?.componentId, props.value?.tag)}</span> : null,
         filterable: true,
         filter: filterReleasedComponent
       },
@@ -86,10 +69,17 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Initiator',
         accessor: 'initiator',
-        Cell: (props: any) => <div>
-          <div>Initiator: {props.value?.userName}</div>
-          <div>Reason: {props.value?.reason}</div>
-        </div>
+        Cell: (props: any) => {
+          const userName = props.value?.userName;
+          const reason = props.value?.reason;
+
+          return (
+            <div>
+              {userName && <div>Initiator: {userName}</div>}
+              {reason && <div>Reason: {reason}</div>}
+            </div>
+          )
+        }
       },
       {
         Header: 'Versions',
@@ -117,7 +107,6 @@ export default function SetupTestsTable(props: VersionTableProps) {
 
   const defaultColumn = React.useMemo(
     () => ({
-      // Let's set up our default Filter UI
       Filter: DefaultColumnFilter,
     }),
     [],
@@ -197,6 +186,10 @@ function filterReleasedComponent(rows: any, _: any, filterValue: string) {
   return rows.filter((row: any) => {
     const {componentId, tag} = row.values?.releasedComponent || {};
     if(!componentId && !tag) return false;
-    return `${componentId}: ${tag}`.includes(filterValue)
+    return getReleaseComponentCellContent(componentId, tag).includes(filterValue)
   })
+}
+
+function getReleaseComponentCellContent(componentId: string, tag: string ) {
+  return `${componentId}: ${tag}`
 }

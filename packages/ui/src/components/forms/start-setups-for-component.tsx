@@ -21,11 +21,13 @@ import { useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e';
 import {arrToKeyValue, getUniqueComponentIds, keyValueToArr} from './util';
+import useUser from '../../github/hooks/use-user';
 
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const {components, setups} = props.data;
   const [componentSetups, setComponentSetups] = useState(setups);
   const [setupsRequiredComponents, setSetupsRequiredComponents] = useState<string[]>([]);
+  const {data: useData} = useUser();
 
   return (
     <>
@@ -35,7 +37,10 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
         onSubmit={async ({ componentId, componentsVersions }) => {
           try {
             const versions = keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[];
-            const response = await e2e.startSetupsForComponent({componentId, versions});
+            const response = await e2e.startSetupsForComponent({componentId, versions, initiator: {
+              userName: useData.name,
+              reason: "Manual start tests for component"
+            }});
             if (!response.ok) {
               alert(`Failed to start test: ${response.status}`);
             }

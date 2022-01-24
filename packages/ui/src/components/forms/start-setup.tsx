@@ -21,6 +21,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e'
 import {arrToKeyValue, keyValueToArr} from './util';
+import useUser from '../../github/hooks/use-user';
 
 interface AutotestsSetup {
   file: string;
@@ -31,6 +32,7 @@ interface AutotestsSetup {
 export default (props: { ledger: Ledger; data: LedgerData }) => {
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
   const [componentIds, setComponentIds] = useState<string[]>([]);
+  const {data: useData} = useUser();
 
   useEffect(() => {
     (async() => {
@@ -45,7 +47,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
 
   return (
     <>
-      <h3>Start setup</h3>
+      <h3>Start setup with parameter</h3>
       <Formik
         initialValues={{setupId: '', isCustomParams: false, componentsVersions: {}, params: ''}}
         onSubmit={async ({ setupId, componentsVersions, params }) => {
@@ -56,6 +58,10 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
               setupId,
               cypressEnv: autotestsSetups[setupId].cypressEnv,
               specFile: autotestsSetups[setupId].file,
+              initiator: {
+                userName: useData.name,
+                reason: "Manual start setup with parameter"
+              }
             })
             if (!response.ok) {
               alert(`Failed to start setup: ${response.status}`);

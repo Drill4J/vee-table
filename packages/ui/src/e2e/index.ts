@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
+import { RawVersion, Initiator } from '@drill4j/vee-ledger/src/types-internal';
 import connection from '../github/connection';
 
 export const getSetups =  async () =>  {
@@ -27,10 +27,12 @@ export const getSetups =  async () =>  {
 interface StartSetupsForComponentPayload {
   versions: RawVersion[];
   componentId: string;
+  initiator: Initiator;
 }
 
 interface StartAllSetupsPayload {
   versions: RawVersion[];
+  initiator: Initiator;
 }
 
 interface StartSetupPayload {
@@ -39,6 +41,7 @@ interface StartSetupPayload {
   setupId: string;
   cypressEnv: Record<string, string>;
   specFile: string;
+  initiator: Initiator;
 }
 
 const startSetupsForComponent = async (payload: StartSetupsForComponentPayload) => {
