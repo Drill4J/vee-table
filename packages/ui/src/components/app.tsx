@@ -83,7 +83,7 @@ function RenderStuff() {
         {data.setups.map((setup: any) => {
           const setupTests = ledger.getSetupTests(setup.id);
           return (
-            <div className="col-12 col-md-6 col-xl-4 mb-3" key={setup.id}>
+            <div className="mb-3" key={setup.id}>
               <h5>{setup.name}</h5>
               <SetupTestsTable setup={setup} tests={setupTests} />
             </div>
@@ -109,15 +109,13 @@ function RenderStuff() {
         <div className="col-12 col-md-6 col-xl-3">
           <FormAddTest ledger={ledger} data={data} />
         </div>
-      </div>
-      <div className="row mt-5">
-        <div className="col-12 col-md-6 col-xl-4">
+        <div className="col-12 col-md-6 col-xl-3">
           <FormStartSetupsForComponent ledger={ledger} data={data} />
         </div>
-        <div className="col-12 col-md-6 col-xl-4">
+        <div className="col-12 col-md-6 col-xl-3">
           <FormStartSetup ledger={ledger} data={data} />
         </div>
-        <div className="col-12 col-md-6 col-xl-4">
+        <div className="col-12 col-md-6 col-xl-3">
           <FormStartAllSetups ledger={ledger} data={data} />
         </div>
       </div>
