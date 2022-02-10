@@ -25,6 +25,7 @@ import { ColumnDetails } from './types';
 import { T } from './styles';
 import { Pagination } from './Pagination';
 import DefaultColumnFilter from './default-column-filter';
+import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
 
 type VersionTableProps = {
   setup: Setup;
@@ -40,7 +41,7 @@ const S = {
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
-  const { tests } = props;
+  const { tests, setup } = props;
   const data = React.useMemo<ColumnDetails[]>(
     () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
@@ -72,6 +73,8 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Versions',
         accessor: 'componentVersionMap',
+        filter: filterComponent,
+        filterable: true,
         Cell: (props: any) => {
           return (
             <NoRender label="versions">
@@ -102,7 +105,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
 
   const defaultColumn = React.useMemo(
     () => ({
-      Filter: DefaultColumnFilter,
+      Filter: (props: any) => <DefaultColumnFilter setupId={setup.id} {...props}/>,
     }),
     [],
   );
@@ -125,12 +128,10 @@ export default function SetupTestsTable(props: VersionTableProps) {
                   headerGroup.headers.map((column: any) => {
                     return (
                       // Apply the header cell props
-                      <T.Th {...column.getHeaderProps()}>
-                        {
-                          // Render the header
-                          column.render('Header')
-                        }
-                        {column.filterable ? column.render('Filter') : null}
+                      <T.Th {...column.getHeaderProps()} >
+                        <div className="flex gap-x-2">
+                          {column.render('Header')}
+                          {column.filterable ? column.render('Filter') : null}</div>
                       </T.Th>
                     )
                   })
@@ -177,14 +178,9 @@ export default function SetupTestsTable(props: VersionTableProps) {
   );
 }
 
-function filterReleasedComponent(rows: any, _: any, filterValue: string) {
+function filterComponent(rows: any, _: any, filterValue: RawVersion[]) {
   return rows.filter((row: any) => {
-    const {componentId, tag} = row.values?.releasedComponent || {};
-    if(!componentId && !tag) return false;
-    return getReleaseComponentCellContent(componentId, tag).includes(filterValue)
+    const componentVersionMap = row.values?.componentVersionMap || {};
+    return filterValue.every(({componentId, tag}) => componentVersionMap[componentId] === tag)
   })
-}
-
-function getReleaseComponentCellContent(componentId: string, tag: string ) {
-  return `${componentId}: ${tag}`
 }
