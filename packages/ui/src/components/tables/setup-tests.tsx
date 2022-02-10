@@ -25,11 +25,12 @@ import { ColumnDetails } from './types';
 import { T } from './styles';
 import { Pagination } from './Pagination';
 import DefaultColumnFilter from './default-column-filter';
-import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
+import { RawVersion, Ledger } from '@drill4j/vee-ledger';
 
 type VersionTableProps = {
   setup: Setup;
   tests: TestResult[];
+  ledger: Ledger;
 };
 
 const S = {
@@ -41,7 +42,7 @@ const S = {
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
-  const { tests, setup } = props;
+  const { tests, setup, ledger } = props;
   const data = React.useMemo<ColumnDetails[]>(
     () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
@@ -105,7 +106,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
 
   const defaultColumn = React.useMemo(
     () => ({
-      Filter: (props: any) => <DefaultColumnFilter setupId={setup.id} {...props}/>,
+      Filter: (props: any) => <DefaultColumnFilter setupId={setup.id} ledger={ledger} {...props}/>,
     }),
     [],
   );

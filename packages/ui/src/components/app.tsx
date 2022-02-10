@@ -36,6 +36,8 @@ import { DebugData } from './DebugData';
 import NoRender from './no-render';
 import Question from './question';
 import { ElapsedSinceChange } from './elapsed-since-change';
+import { useState } from 'react';
+import { useClickOutside } from '../hooks/use-click-outside';
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
           )}
         </div>
         <User />
+        <LaunchTestsModals/>
+        <UpdateLedgerModals/>
       </div>
       <div className="main-ui">{connection.isConnected() ? <RenderStuff /> : <Nothing authenticate={() => connection.connect()} />}</div>
     </div>
@@ -85,7 +89,7 @@ function RenderStuff() {
           return (
             <div className="col-12 mb-3" key={setup.id}>
               <h5>{setup.name}</h5>
-              <SetupTestsTable setup={setup} tests={setupTests} />
+              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger}/>
             </div>
           );
         })}
@@ -94,35 +98,52 @@ function RenderStuff() {
       <Question>IDEA #2: Allow to use @ to link Jira users/Jira issues?</Question>
       <Question>IDEA #3: Allow attachments?</Question>
       <Question>IDEA #4: Click-on-version/component to navigate to commit/rep/artifact?</Question>
-
-      {/*FORMS  */}
-      <div className="row mt-5">
-        <div className="col-12 col-md-6 col-xl-3">
-          <FormAddComponent ledger={ledger} data={data} />
-        </div>
-        <div className="col-12 col-md-6 col-xl-3">
-          <FormAddSetup ledger={ledger} data={data} />
-        </div>
-        <div className="col-12 col-md-6 col-xl-3">
-          <FormAddVersion ledger={ledger} data={data} />
-        </div>
-        <div className="col-12 col-md-6 col-xl-3">
-          <FormAddTest ledger={ledger} data={data} />
-        </div>
-      </div>
-      <div className="row mt-5">
-        <div className="col-12 col-md-6 col-xl-4">
-          <FormStartSetupsForComponent ledger={ledger} data={data} />
-        </div>
-        <div className="col-12 col-md-6 col-xl-4">
-          <FormStartSetup ledger={ledger} data={data} />
-        </div>
-        <div className="col-12 col-md-6 col-xl-4">
-          <FormStartAllSetups ledger={ledger} data={data} />
-        </div>
-      </div>
     </div>
   );
+}
+
+function LaunchTestsModals ()  {
+  const [selectedModal, setSelectedModal] = useState<"START_SETUP" | "START_ALL_SETUPS" | "START_SETUPS_FOR_COMPONENT" | null>(null)
+  const { data, ledger } = useLedgerData();
+  const ref = useClickOutside(() => setSelectedModal(null))
+  if(!data || !ledger) return null
+
+  return <div className="flex gap-x-3 p-2"  ref={ref}>
+    Launch tests:
+    <span className='link' onClick={() => setSelectedModal("START_SETUP")}>Setup</span>
+    <span className='link' onClick={() => setSelectedModal("START_SETUPS_FOR_COMPONENT")}>For component</span>
+    <span className='link' onClick={() => setSelectedModal("START_ALL_SETUPS")}>All</span>
+    {selectedModal &&
+      <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]">
+        {selectedModal === "START_SETUPS_FOR_COMPONENT" && <FormStartSetupsForComponent ledger={ledger} data={data} />}
+        {selectedModal === "START_SETUP" && <FormStartSetup ledger={ledger} data={data} />}
+        {selectedModal === "START_ALL_SETUPS" && <FormStartAllSetups ledger={ledger} data={data} />}
+      </div>
+    }
+  </div>
+}
+
+function UpdateLedgerModals ()  {
+  const [selectedModal, setSelectedModal] = useState<"COMPONENT" | "SETUP" | "VERSION" | "TEST_RESULT" | null>(null)
+  const { data, ledger } = useLedgerData();
+  const ref = useClickOutside(() => setSelectedModal(null))
+  if(!data || !ledger) return null
+
+  return <div className="flex gap-x-3 p-2" ref={ref}>
+    Add:
+    <span className='link' onClick={() => setSelectedModal("COMPONENT")}>Component</span>
+    <span className='link' onClick={() => setSelectedModal("SETUP")}>Setup</span>
+    <span className='link' onClick={() => setSelectedModal("VERSION")}>Version</span>
+    <span className='link' onClick={() => setSelectedModal("TEST_RESULT")}>Test result</span>
+    {selectedModal &&
+      <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]" >
+        {selectedModal === "COMPONENT" && <FormAddComponent ledger={ledger} data={data} />}
+        {selectedModal === "SETUP" && <FormAddSetup ledger={ledger} data={data} />}
+        {selectedModal === "VERSION" && <FormAddVersion ledger={ledger} data={data} />}
+        {selectedModal === "TEST_RESULT" && <FormAddTest ledger={ledger} data={data} />}
+      </div>
+    }
+  </div>
 }
 
 const TopFixedWrapper = styled.div`

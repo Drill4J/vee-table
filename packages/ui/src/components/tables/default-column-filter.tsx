@@ -16,15 +16,13 @@
 import { Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import VersionsSelect from '../versions-select'
-import useLedgerData from '../../github/hooks/use-ledger-data';
 import { Ledger, RawVersion } from '@drill4j/vee-ledger';
+import { useClickOutside } from '../../hooks/use-click-outside';
 
-export default function DefaultColumnFilter({
-  setupId,  column: { setFilter },
-}: any) {
-  const { ledger } = useLedgerData();
+export default function DefaultColumnFilter({ setupId, ledger, column: { setFilter }}: {setupId: string, ledger: Ledger, column: any}) {
   const [isOpen, setIsOpen] = useState(false);
   const components = ledger?.getSetupComponents(setupId) || [];
+  const ref = useClickOutside(() => setIsOpen(false))
 
   return (
     <Formik
@@ -37,11 +35,11 @@ export default function DefaultColumnFilter({
         <div className="fill-current link" onClick={() => setIsOpen(true)}>
           <FilterIcon/>
         </div>
-        {isOpen && <div className="absolute bg-shade3 p-2">
-          <VersionsSelect componentIds={components.map(({id}) => id)} ledger={ledger as Ledger} fieldNamePrefix={'componentsVersions'}/>
-          <button type="submit" className="mr-2" >Submit</button>
-          <button type="button" onClick={() => setIsOpen(false)}>Close</button>
-        </div>}
+        {isOpen && (
+          <div className="absolute bg-shade3 p-2" ref={ref}>
+            <VersionsSelect componentIds={components.map(({id}) => id)} ledger={ledger as Ledger} fieldNamePrefix={'componentsVersions'}/>
+            <button type="submit">Submit</button>
+          </div>)}
       </Form>
     </Formik>
   )

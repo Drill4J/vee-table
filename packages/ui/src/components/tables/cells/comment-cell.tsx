@@ -18,6 +18,7 @@ import NoRender from '../../no-render';
 import { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Ledger } from '@drill4j/vee-ledger/build';
+import { useClickOutside } from '../../../hooks/use-click-outside';
 
 interface Props {
   releaseComponentDate: number;
@@ -45,6 +46,8 @@ export default function CommentCell(props: Props) {
 const AddComment = ({releaseComponentDate, user, ledger, comment}: Props) => {
   const {message: previousMessage = ''} = comment || {};
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useClickOutside(() => setIsOpen(false))
+
   return(
     <div className="relative">
       <div className="fill-current link" onClick={() => setIsOpen(true)} title={comment?.message ? 'Edit' : 'Add'}>
@@ -59,7 +62,7 @@ const AddComment = ({releaseComponentDate, user, ledger, comment}: Props) => {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
           }
         }}>
-          <div className="absolute z-10 bg-shade3 -left-[250px]">
+          <div className="absolute z-10 bg-shade3 -left-[250px]" ref={ref}>
             <Form className="flex flex-col w-[250px]">
               <Field
                 id={`message`}
@@ -68,7 +71,6 @@ const AddComment = ({releaseComponentDate, user, ledger, comment}: Props) => {
                 autoFocus
               />
               <button type='submit'>Submit</button>
-              <button type='button' onClick={() => setIsOpen(false)}>Close</button>
             </Form>
           </div>
         </Formik>
