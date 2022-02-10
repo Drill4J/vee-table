@@ -59,30 +59,23 @@ const AddComment = ({releaseComponentDate, user, ledger, comment}: Props) => {
             alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
           }
         }}>
-          <FormAddComponent onClose={() => setIsOpen(false)}/>
+          <div className="absolute z-10 bg-shade3 -left-[250px]">
+            <Form className="flex flex-col w-[250px]">
+              <Field
+                id={`message`}
+                name={`message`}
+                as={'textarea'}
+                autoFocus
+              />
+              <button type='submit'>Submit</button>
+              <button type='button' onClick={() => setIsOpen(false)}>Close</button>
+            </Form>
+          </div>
         </Formik>
       )}
     </div>
   )
 }
-
-function FormAddComponent({onClose}: {onClose: () => void}) {
-  return(
-    <div className="absolute z-10 bg-shade3">
-      <Form className="flex flex-col min-w-[250px]">
-        <Field
-          id={`message`}
-          name={`message`}
-          as={'textarea'}
-          autoFocus
-        />
-        <button type='submit'>Submit</button>
-        <button type='button' onClick={onClose}>Close</button>
-      </Form>
-    </div>
-  )
-}
-
 
 const AddCommentSvg = () => <svg
   xmlns='http://www.w3.org/2000/svg'
