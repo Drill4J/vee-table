@@ -18,7 +18,7 @@ import { useFilters, usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
 import { Setup, TestResult } from '@drill4j/vee-ledger';
-import ComponentsVersionsMap from '../components-versions-map';
+import DataObjectMap from '../data-object-map';
 import NoRender from '../no-render';
 import { sortBy } from './util';
 import { ColumnDetails } from './types';
@@ -56,29 +56,17 @@ export default function SetupTestsTable(props: VersionTableProps) {
         },
       },
       {
-        Header: 'Component released',
-        accessor: 'releasedComponent',
-        Cell: (props: any) => props.value ? <span>{getReleaseComponentCellContent(props.value?.componentId, props.value?.tag)}</span> : null,
-        filterable: true,
-        filter: filterReleasedComponent
-      },
-      {
         Header: 'Status',
         accessor: 'status',
       },
       {
-        Header: 'Initiator',
+        Header: 'Reason',
         accessor: 'initiator',
         Cell: (props: any) => {
           const userName = props.value?.userName;
           const reason = props.value?.reason;
 
-          return (
-            <div>
-              {userName && <div>Initiator: {userName}</div>}
-              {reason && <div>Reason: {reason}</div>}
-            </div>
-          )
+          return <span>{userName}: {reason}</span>
         }
       },
       {
@@ -87,14 +75,21 @@ export default function SetupTestsTable(props: VersionTableProps) {
         Cell: (props: any) => {
           return (
             <NoRender label="versions">
-              <ComponentsVersionsMap data={props.row.values.componentVersionMap} />
+              <DataObjectMap data={props.row.values.componentVersionMap} />
             </NoRender>
           );
         },
       },
       {
-        Header: 'Autotest Params',
+        Header: "Autotests params",
         accessor: 'autotestParams',
+        Cell: (props: any) => {
+          return (
+            <NoRender label="Params">
+              <DataObjectMap data={props.value} />
+            </NoRender>
+          );
+        },
       },
       {
         Header: 'Run',

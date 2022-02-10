@@ -29,24 +29,23 @@ const S = {
   td: styled.td`
     padding: ${L.paddingSm};
   `,
-  versionTag: styled.span`
+  valueWrapper: styled.span`
     color: ${C.yellow};
   `,
 };
 
-type ComponentsVersionsMapProps = {
-  [componentId: string]: string;
-};
-
-export default function ComponentsVersionsMap(props: ComponentsVersionsMapProps) {
+export default function DataObjectMap({data}: { data?: Record<string, string>; }) { //TODO rename me
+  if(!data) {
+    return <span>No data</span>
+  }
   return (
     <S.table>
-      {Object.entries(props.data).map(([componentId, versionTag]) => {
+      {Object.entries(data).map(([key, value]) => {
         return (
-          <S.tr key={`${componentId}:${versionTag}`}>
-            <S.td>{componentId}</S.td>
+          <S.tr key={`${key}:${value}`}>
+            <S.td>{key}</S.td>
             <S.td>
-              <S.versionTag>{versionTag}</S.versionTag>
+              <S.valueWrapper>{value}</S.valueWrapper>
             </S.td>
           </S.tr>
         );
