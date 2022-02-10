@@ -17,7 +17,6 @@ import React from 'react';
 import { useTable, usePagination } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
-import AddCommentsCell from './cells/add-comment-cell';
 import { Component, Version, Comment } from '@drill4j/vee-ledger';
 import Question from '../question';
 import { T } from './styles';
@@ -70,19 +69,11 @@ export default function VersionTable(props: VersionTableProps) {
       },
       ...components.map(c => ({ Header: c.name, Latest: props.ledger.getLatestVersion(c.id)?.tag || '-', accessor: c.id })),
       {
-        Header: 'Add Comments',
-        Latest: '',
-        accessor: 'add-comments',
-        Cell: (props: any) => {
-          return <AddCommentsCell releaseComponentDate={props.row.values.release} user={userData} ledger={ledger} comment={comments[props.row.values.release]}/>;
-        },
-      },
-      {
         Header: 'Comments',
         Latest: '',
         accessor: 'comments',
         Cell: (props: any) => {
-          return <CommentCell comment={comments[props.row.values.release]}/>;
+          return <CommentCell releaseComponentDate={props.row.values.release} user={userData} ledger={ledger} comment={comments[props.row.values.release]}/>;
         }
       },
     ],
