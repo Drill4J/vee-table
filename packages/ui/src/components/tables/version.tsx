@@ -77,7 +77,7 @@ export default function VersionTable(props: VersionTableProps) {
         }
       },
     ],
-    [], // FIXME
+    [userData], // FIXME
   );
 
   const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE } } as any, usePagination);
