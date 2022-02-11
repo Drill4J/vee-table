@@ -86,7 +86,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
       },
       {
         Header: "Autotests params",
-        accessor: 'autotestParams',
+        accessor: 'testParams',
         Cell: (props: any) => {
           return (
             <NoRender label="Params">
