@@ -31,7 +31,7 @@ export default function CommentCell(props: Props) {
   const { comment } = props
 
   return (
-    <div>
+    <div className="flex gap-x-3">
       {comment?.userName && comment?.message &&
         <NoRender label={comment?.userName}>
           <div className='max-w-[250px] whitespace-pre-wrap'>{comment?.message}</div>
@@ -79,14 +79,7 @@ const AddComment = ({releaseComponentDate, user, ledger, comment}: Props) => {
   )
 }
 
-const AddCommentSvg = () => <svg
-  xmlns='http://www.w3.org/2000/svg'
-  version='1.1'
-  x='0'
-  y='0'
-  width='24'
-  height='24'
-  viewBox='-247 370.9 100 100'>
-  <path
-    d='M-147.7 390.4c-.3-5.5-4.7-9.8-10-9.8h-78.8c-5.6 0-10.1 4.6-10.1 10.2v42.3c0 5.5 4.6 10.2 10.1 10.2h2.3v14.1c0 1.5.8 2.8 2.2 3.4.6.3 1.1.4 1.7.4 1 0 1.9-.4 2.6-1.1l17.3-16.9h52.8c5.4 0 10-4.7 10-10.2v-42.6h-.1zm-5 42.7c0 2.8-2.3 5.2-5 5.2h-54.8l-16.7 16.3v-16.3h-7.3c-2.7 0-5.1-2.4-5.1-5.2v-42.3c0-2.8 2.3-5.2 5.1-5.2h78.8c2.7 0 4.8 2.2 5 5v42.5z' />
+const AddCommentSvg = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
 </svg>;
