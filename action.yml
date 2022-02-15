@@ -7,14 +7,14 @@ inputs:
   action-type:
     description: 'Either "add-version" or "add-test-result"'
     required: true
-  
+
   ledger-repo-url:
     description: 'URL of repository where ledger.json is/should be stored'
     required: true
-  ledger-repo-owner: 
+  ledger-repo-owner:
     description: 'GitHub username of the ledger repo owner'
     required: true
-  ledger-repo-name: 
+  ledger-repo-name:
     description: 'GitHub ledger repo name'
     required: true
 
@@ -36,6 +36,18 @@ inputs:
     required: false
   test-component-version-map:
     description: 'Stringified JSON object that contains key-values for each "componentId":"versionTag". It must be exhaustive'
+    required: false
+  released-component:
+    description: 'Stringified JSON object that contains componentId and tag'
+    required: false
+  initiator:
+    description: 'Stringified JSON object that contains userName of initiator and reason'
+    required: false
+  link-to-run:
+    description: 'Link to tests run in github'
+    required: false
+  test-params:
+    description: 'Autotest params in the setup'
     required: false
 runs:
   using: 'node12'

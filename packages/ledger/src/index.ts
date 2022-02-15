@@ -255,6 +255,10 @@ export class Ledger {
       throw new Error('Please specify a version for each of the components');
     }
 
+    if (!data.initiator.userName) {
+      throw new Error('user is not logged in');
+    }
+
     // existing setup
     const setup = this.getSetupById(data.setupId);
     if (!setup) {
@@ -268,10 +272,9 @@ export class Ledger {
       this.validateSetupComponentsList(data, setup.componentIds);
     }
 
-    await this.addTo('tests', {
+    await this.addTo<TestResult>('tests', {
+      ...data,
       date: Date.now(),
-      componentVersionMap: data.componentVersionMap,
-      setupId: data.setupId,
       status: data.status.trim(),
       description: data.description?.trim(),
     });

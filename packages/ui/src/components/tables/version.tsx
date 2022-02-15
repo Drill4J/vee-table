@@ -17,22 +17,21 @@ import React from 'react';
 import { useTable, usePagination } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
-import AddCommentsCell from './cells/add-comment-cell';
 import { Component, Version, Comment } from '@drill4j/vee-ledger';
-import Question from '../question';
 import { T } from './styles';
 import { ColumnDetails } from './types';
 import { Pagination } from './Pagination';
 import { sortBy } from './util';
 import { Ledger } from '@drill4j/vee-ledger';
-import useUser from '../../github/hooks/use-user'
+import useUser from '../../github/hooks/use-user';
 import CommentCell from './cells/comment-cell';
+import AddCommentCell from './cells/add-comment-cell';
 
 type VersionTableProps = {
   components: Component[];
   versions: Version[];
   ledger: Ledger; // FIXME I don't like it
-  comments: Record<string, Comment>
+  comments: Record<string, Comment>;
 };
 
 const S = {
@@ -47,7 +46,7 @@ const S = {
 const INIT_PAGE_SIZE = 10;
 export default function VersionTable(props: VersionTableProps) {
   const { components, versions, ledger, comments } = props;
-  const { data: userData } = useUser()
+  const { data: userData } = useUser();
 
   const data = React.useMemo<ColumnDetails[]>(
     () =>
@@ -64,29 +63,30 @@ export default function VersionTable(props: VersionTableProps) {
         Header: 'Release date',
         Latest: 'latests:',
         accessor: 'release',
-        Cell: (props: any) => {
-          return <ElapsedTimer start={props.row.values.release} />;
-        },
+        Cell: (props: any) => <ElapsedTimer start={props.row.values.release} />,
       },
       ...components.map(c => ({ Header: c.name, Latest: props.ledger.getLatestVersion(c.id)?.tag || '-', accessor: c.id })),
-      {
-        Header: 'Add Comments',
-        Latest: '',
-        accessor: 'add-comments',
-        Cell: (props: any) => {
-          return <AddCommentsCell releaseComponentDate={props.row.values.release} user={userData} ledger={ledger} comment={comments[props.row.values.release]}/>;
-        },
-      },
       {
         Header: 'Comments',
         Latest: '',
         accessor: 'comments',
-        Cell: (props: any) => {
-          return <CommentCell comment={comments[props.row.values.release]}/>;
-        }
+        Cell: (props: any) => <CommentCell comment={comments[props.row.values.release]} />,
+      },
+      {
+        Header: '',
+        Latest: '',
+        accessor: 'add-comment',
+        Cell: (props: any) => (
+          <AddCommentCell
+            releaseComponentDate={props.row.values.release}
+            user={userData}
+            ledger={ledger}
+            comment={comments[props.row.values.release]}
+          />
+        ),
       },
     ],
-    [], // FIXME
+    [userData], // FIXME
   );
 
   const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE } } as any, usePagination);
@@ -145,19 +145,6 @@ export default function VersionTable(props: VersionTableProps) {
         </S.Table>
       </S.ScrollXWrapper>
       <Pagination tableInstance={tableInstance} />
-      <Question>
-        <span>1. Filter tags e.g. x.y.z "stable only" | x.y.z-*"prerelease" | x.y.z-my-feature "scratch", etc</span>
-        <br />
-        <span>2. Allow sorting by either date or semver</span>
-        <br />
-        <span>3. Display latests row in setups</span>
-        <br />
-        <span>4. Allow temporarily hiding all but one column</span>
-        <br />
-        <span>5. Allow to reorder/hide columns (localStorage)</span>
-        <br />
-        <span>6. Save pagination settings (localStorage)</span>
-      </Question>
     </div>
   );
 }

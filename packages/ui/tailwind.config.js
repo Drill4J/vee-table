@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const plugin = require("tailwindcss/plugin");
+
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -33,5 +36,33 @@ module.exports = {
       },
     }
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addUtilities }) => {
+      const newUtilities = {
+        ".link": {
+          backgroundColor: "transparent",
+          color: "#007fff",
+          cursor: "pointer",
+        },
+        ".link:hover": {
+          color: "#3399ff",
+        },
+        ".link:active": {
+          color: "#006cd8",
+        },
+        ".action-icon": {
+          color: "#e3e6e8",
+          cursor: "pointer",
+        },
+        ".action-icon:hover": {
+          color: "#f8f9fb",
+        },
+        ".action-icon:active": {
+          color: "#a4acb3",
+        },
+      };
+
+      addUtilities(newUtilities);
+    }),
+  ],
 }

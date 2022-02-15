@@ -13,26 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Comment } from '@drill4j/vee-ledger';
-import NoRender from '../../no-render';
+import { Ledger, LedgerData } from '@drill4j/vee-ledger';
 
-interface Props {
-  comment?: Comment
+export interface FormProps {
+  ledger: Ledger;
+  data: LedgerData;
 }
-
-export default function CommentCell(props: Props) {
-  const { comment } = props
-
-  return (
-    <div className="flex gap-x-3">
-      {comment?.userName && comment?.message &&
-        <NoRender label={comment?.userName}>
-          <div className='max-w-[250px] whitespace-pre-wrap'>{comment?.message}</div>
-        </NoRender>
-      }
-    </div>
-  );
-}
-
-
-

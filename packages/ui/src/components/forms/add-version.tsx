@@ -18,12 +18,11 @@ import connection from '../../github/connection';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
 import { useState } from 'react';
-import { LedgerData } from '@drill4j/vee-ledger';
-import { Ledger } from '@drill4j/vee-ledger';
+import { FormProps } from './types';
 
 const VERSION_PLACEHOLDER = 'SemVer, e.g. x.y.z';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   if (!Array.isArray(props.data.components) || props.data.components.length === 0) {
     return <Spinner>No available components. Create components first</Spinner>;
   }
@@ -55,7 +54,7 @@ export default (props: { ledger: Ledger; data: LedgerData }) => {
             <Field
               id="add-version-field-component-id"
               name="componentId"
-              component={SelectField(async (componentId: string, form) => {
+              component={SelectField(async (componentId: string) => {
                 const ledger = await connection.getLedgerInstance();
                 if (!ledger) return;
                 const latestVersion = await ledger.getLatestVersion(componentId);
