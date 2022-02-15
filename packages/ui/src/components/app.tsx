@@ -36,8 +36,9 @@ import { DebugData } from './DebugData';
 import NoRender from './no-render';
 import Question from './question';
 import { ElapsedSinceChange } from './elapsed-since-change';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useClickOutside } from '../hooks/use-click-outside';
+import { FormProps } from './forms/types';
 
 function App() {
   return (
@@ -51,8 +52,17 @@ function App() {
           )}
         </div>
         <User />
-        <LaunchTestsModals/>
-        <UpdateLedgerModals/>
+        <FormModals label='Launch tests' modals={[
+          { label: 'For component', Form: FormStartSetupsForComponent },
+          { label: 'Setup', Form: FormStartSetup },
+          { label: 'All', Form: FormStartAllSetups },
+        ]}/>
+        <FormModals label='Add' modals={[
+          { label: 'Component', Form: FormAddComponent },
+          { label: 'Setup', Form: FormAddSetup },
+          { label: 'Version', Form: FormAddVersion },
+          { label: 'Test result', Form: FormAddTest },
+        ]}/>
       </div>
       <div className="main-ui">{connection.isConnected() ? <RenderStuff /> : <Nothing authenticate={() => connection.connect()} />}</div>
     </div>
@@ -102,45 +112,23 @@ function RenderStuff() {
   );
 }
 
-function LaunchTestsModals ()  {
-  const [selectedModal, setSelectedModal] = useState<"START_SETUP" | "START_ALL_SETUPS" | "START_SETUPS_FOR_COMPONENT" | null>(null)
-  const { data, ledger } = useLedgerData();
-  const ref = useClickOutside(() => setSelectedModal(null))
-  if(!data || !ledger) return null
-
-  return <div className="flex gap-x-3 p-2"  ref={ref}>
-    Launch tests:
-    <span className='link' onClick={() => setSelectedModal("START_SETUP")}>Setup</span>
-    <span className='link' onClick={() => setSelectedModal("START_SETUPS_FOR_COMPONENT")}>For component</span>
-    <span className='link' onClick={() => setSelectedModal("START_ALL_SETUPS")}>All</span>
-    {selectedModal &&
-      <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]">
-        {selectedModal === "START_SETUPS_FOR_COMPONENT" && <FormStartSetupsForComponent ledger={ledger} data={data} />}
-        {selectedModal === "START_SETUP" && <FormStartSetup ledger={ledger} data={data} />}
-        {selectedModal === "START_ALL_SETUPS" && <FormStartAllSetups ledger={ledger} data={data} />}
-      </div>
-    }
-  </div>
+interface Modal {
+  label: string;
+  Form: React.FC<FormProps>
 }
 
-function UpdateLedgerModals ()  {
-  const [selectedModal, setSelectedModal] = useState<"COMPONENT" | "SETUP" | "VERSION" | "TEST_RESULT" | null>(null)
+function FormModals({ modals, label }: { modals: Modal[], label: string }) {
+  const [selectedModal, setSelectedModal] = useState<string | null>(null)
   const { data, ledger } = useLedgerData();
   const ref = useClickOutside(() => setSelectedModal(null))
   if(!data || !ledger) return null
 
   return <div className="flex gap-x-3 p-2" ref={ref}>
-    Add:
-    <span className='link' onClick={() => setSelectedModal("COMPONENT")}>Component</span>
-    <span className='link' onClick={() => setSelectedModal("SETUP")}>Setup</span>
-    <span className='link' onClick={() => setSelectedModal("VERSION")}>Version</span>
-    <span className='link' onClick={() => setSelectedModal("TEST_RESULT")}>Test result</span>
+    {label}:
+    {modals.map(({label}) => <span className='link' onClick={() => setSelectedModal(label)}>{label}</span>)}
     {selectedModal &&
       <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]" >
-        {selectedModal === "COMPONENT" && <FormAddComponent ledger={ledger} data={data} />}
-        {selectedModal === "SETUP" && <FormAddSetup ledger={ledger} data={data} />}
-        {selectedModal === "VERSION" && <FormAddVersion ledger={ledger} data={data} />}
-        {selectedModal === "TEST_RESULT" && <FormAddTest ledger={ledger} data={data} />}
+        {modals.map(({label, Form}) => selectedModal === label && <Form ledger={ledger} data={data}/>)}
       </div>
     }
   </div>

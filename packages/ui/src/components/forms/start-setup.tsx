@@ -15,13 +15,13 @@
  */
 import { Formik, Form, Field } from 'formik';
 import SelectField from './generic/select-field';
-import {LedgerData, RawVersion} from '@drill4j/vee-ledger';
+import {RawVersion} from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
 import { useEffect, useMemo, useState } from 'react';
-import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e'
 import {arrToKeyValue, keyValueToArr} from './util';
 import useUser from '../../github/hooks/use-user';
+import { FormProps } from './types';
 
 interface AutotestsSetup {
   file: string;
@@ -29,7 +29,7 @@ interface AutotestsSetup {
   params: Record<string, string>[];
 }
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
   const [componentIds, setComponentIds] = useState<string[]>([]);
   const {data: useData} = useUser();

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Ledger } from '@drill4j/vee-ledger';
-import { LedgerData } from '@drill4j/vee-ledger';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => (
+export default (props: FormProps) => (
   <Formik
     initialValues={{ id: '', name: '' }}
     onSubmit={async (values, { setSubmitting }) => {

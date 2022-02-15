@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Ledger } from '@drill4j/vee-ledger';
-import { LedgerData } from '@drill4j/vee-ledger';
 import Spinner from '../spinner';
 import { startsWith, stripPrefix } from './util';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   if (!Array.isArray(props.data.components) || props.data.components.length === 0) {
     return <Spinner>No available components. Create components first</Spinner>;
   }

@@ -16,15 +16,16 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
-import { Component, LedgerData } from '@drill4j/vee-ledger';
+import { Component } from '@drill4j/vee-ledger';
 import { useEffect, useMemo, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import { startsWith, stripPrefix } from './util';
 import Question from '../question';
 import Alert from '../alert';
 import useUser from '../../github/hooks/use-user';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   if (!Array.isArray(props.data.setups) || props.data.setups.length === 0) {
     return <Spinner>No available setups. Create setups first</Spinner>;
   }

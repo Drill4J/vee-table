@@ -15,15 +15,15 @@
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import SelectField from './generic/select-field';
-import {LedgerData, RawVersion} from '@drill4j/vee-ledger';
+import { RawVersion } from '@drill4j/vee-ledger';
 import VersionsSelect from '../versions-select'
 import { useState } from 'react';
-import { Ledger } from '@drill4j/vee-ledger';
 import e2e from '../../e2e';
 import {arrToKeyValue, getUniqueComponentIds, keyValueToArr} from './util';
 import useUser from '../../github/hooks/use-user';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   const {components, setups} = props.data;
   const [componentSetups, setComponentSetups] = useState(setups);
   const [setupsRequiredComponents, setSetupsRequiredComponents] = useState<string[]>([]);
