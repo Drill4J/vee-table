@@ -34,7 +34,6 @@ import ElapsedTimer from './elapsed-timer';
 import SetupTestsTable from './tables/setup-tests';
 import { DebugData } from './DebugData';
 import NoRender from './no-render';
-import Question from './question';
 import { ElapsedSinceChange } from './elapsed-since-change';
 import React, { useState } from 'react';
 import { useClickOutside } from '../hooks/use-click-outside';
@@ -52,17 +51,23 @@ function App() {
           )}
         </div>
         <User />
-        <FormModals label='Launch tests' modals={[
-          { label: 'For component', Form: FormStartSetupsForComponent },
-          { label: 'Setup', Form: FormStartSetup },
-          { label: 'All', Form: FormStartAllSetups },
-        ]}/>
-        <FormModals label='Add' modals={[
-          { label: 'Component', Form: FormAddComponent },
-          { label: 'Setup', Form: FormAddSetup },
-          { label: 'Version', Form: FormAddVersion },
-          { label: 'Test result', Form: FormAddTest },
-        ]}/>
+        <FormModals
+          label="Launch tests"
+          modals={[
+            { label: 'For component', Form: FormStartSetupsForComponent },
+            { label: 'Setup', Form: FormStartSetup },
+            { label: 'All', Form: FormStartAllSetups },
+          ]}
+        />
+        <FormModals
+          label="Add"
+          modals={[
+            { label: 'Component', Form: FormAddComponent },
+            { label: 'Setup', Form: FormAddSetup },
+            { label: 'Version', Form: FormAddVersion },
+            { label: 'Test result', Form: FormAddTest },
+          ]}
+        />
       </div>
       <div className="main-ui">{connection.isConnected() ? <RenderStuff /> : <Nothing authenticate={() => connection.connect()} />}</div>
     </div>
@@ -89,7 +94,7 @@ function RenderStuff() {
 
       {/* VERSIONS */}
       <h3 className="mt-3">VERSIONS</h3>
-      <VersionTable versions={data.versions} components={data.components} ledger={ledger} comments={data.comments}/>
+      <VersionTable versions={data.versions} components={data.components} ledger={ledger} comments={data.comments} />
 
       {/*SETUPS  */}
       <h3 className="mt-3">SETUPS</h3>
@@ -99,39 +104,41 @@ function RenderStuff() {
           return (
             <div className="col-12 mb-3" key={setup.id}>
               <h5>{setup.name}</h5>
-              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger}/>
+              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger} />
             </div>
           );
         })}
       </div>
-      <Question>IDEA #1: Append logs / links to logs</Question>
-      <Question>IDEA #2: Allow to use @ to link Jira users/Jira issues?</Question>
-      <Question>IDEA #3: Allow attachments?</Question>
-      <Question>IDEA #4: Click-on-version/component to navigate to commit/rep/artifact?</Question>
     </div>
   );
 }
 
 interface Modal {
   label: string;
-  Form: React.FC<FormProps>
+  Form: React.FC<FormProps>;
 }
 
-function FormModals({ modals, label }: { modals: Modal[], label: string }) {
-  const [selectedModal, setSelectedModal] = useState<string | null>(null)
+function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
+  const [selectedModal, setSelectedModal] = useState<string | null>(null);
   const { data, ledger } = useLedgerData();
-  const ref = useClickOutside(() => setSelectedModal(null))
-  if(!data || !ledger) return null
+  const ref = useClickOutside(() => setSelectedModal(null));
+  if (!data || !ledger) return null;
 
-  return <div className="flex gap-x-3 p-2" ref={ref}>
-    {label}:
-    {modals.map(({label}) => <span className='link' onClick={() => setSelectedModal(label)}>{label}</span>)}
-    {selectedModal &&
-      <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]" >
-        {modals.map(({label, Form}) => selectedModal === label && <Form ledger={ledger} data={data}/>)}
-      </div>
-    }
-  </div>
+  return (
+    <div className="flex gap-x-3 p-2" ref={ref}>
+      {label}:
+      {modals.map(({ label }) => (
+        <span className="link" onClick={() => setSelectedModal(label)}>
+          {label}
+        </span>
+      ))}
+      {selectedModal && (
+        <div className="absolute top-10 flex flex-col bg-shade3 p-3 max-w-[500px]">
+          {modals.map(({ label, Form }) => selectedModal === label && <Form ledger={ledger} data={data} />)}
+        </div>
+      )}
+    </div>
+  );
 }
 
 const TopFixedWrapper = styled.div`
