@@ -54,7 +54,7 @@ export default (props: FormProps) => {
               description,
               initiator: {
                 userName: userData?.name,
-                reason: "Manual publish tests result"
+                reason: "User launched test"
               }
             });
 
