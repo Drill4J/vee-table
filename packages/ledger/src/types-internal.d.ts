@@ -27,7 +27,7 @@ export type Comment = {
   userName: string;
   message: string;
   releaseComponentDate: number;
-}
+};
 
 export type Component = {
   id: string;
@@ -52,7 +52,7 @@ export type Version = RawVersion & {
 export type Initiator = {
   userName?: string;
   reason: string;
-}
+};
 
 export type RawTestResult = {
   setupId: string;
@@ -64,7 +64,7 @@ export type RawTestResult = {
   linkToRun?: string;
   releasedComponent?: RawVersion;
   initiator: Initiator;
-  testParams?: string;
+  testParams?: Record<string, string>;
 };
 
 export type TestResult = RawTestResult & {

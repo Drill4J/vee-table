@@ -3520,7 +3520,7 @@ function main() {
                     const initiator = JSON.parse(core.getInput(INPUT_KEYS.INITIATOR));
                     const linkToRun = core.getInput(INPUT_KEYS.LINK_TO_RUN);
                     const componentVersionMap = JSON.parse(versionsStr);
-                    const testParams = core.getInput(INPUT_KEYS.TEST_PARAMS);
+                    const testParams = JSON.parse(core.getInput(INPUT_KEYS.TEST_PARAMS));
                     yield ledger.addTest({ setupId, status, componentVersionMap, description, releasedComponent, initiator, linkToRun, testParams });
                     console.log(`SUCCESS: Added test result ${setupId} - ${status}. Versions:\n${versionsStr}`);
                     break;
