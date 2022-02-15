@@ -273,15 +273,10 @@ export class Ledger {
     }
 
     await this.addTo<TestResult>('tests', {
+      ...data,
       date: Date.now(),
-      componentVersionMap: data.componentVersionMap,
-      setupId: data.setupId,
       status: data.status.trim(),
       description: data.description?.trim(),
-      linkToRun: data.linkToRun,
-      releasedComponent: data.releasedComponent,
-      initiator: data.initiator,
-      testParams: data.testParams
     });
   }
 
