@@ -3514,7 +3514,9 @@ function main() {
                     const status = core.getInput(INPUT_KEYS.TEST_STATUS);
                     const description = core.getInput(INPUT_KEYS.TEST_DESCRIPTION);
                     const versionsStr = core.getInput(INPUT_KEYS.TEST_COMPONENT_VERSION_MAP);
-                    const releasedComponent = JSON.parse(core.getInput(INPUT_KEYS.RELEASED_COMPONENT));
+                    const releasedComponent = core.getInput(INPUT_KEYS.RELEASED_COMPONENT)
+                        ? JSON.parse(core.getInput(INPUT_KEYS.RELEASED_COMPONENT))
+                        : undefined;
                     const initiator = JSON.parse(core.getInput(INPUT_KEYS.INITIATOR));
                     const linkToRun = core.getInput(INPUT_KEYS.LINK_TO_RUN);
                     const componentVersionMap = JSON.parse(versionsStr);
