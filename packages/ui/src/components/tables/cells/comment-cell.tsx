@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './compiled-tailwind.css';
-import './index.css';
-import App from './components/app';
+import { Comment } from '@drill4j/vee-ledger';
+import NoRender from '../../no-render';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+interface Props {
+  comment?: Comment
+}
+
+export default function CommentCell(props: Props) {
+  const { comment } = props
+
+  return (
+    <div className="flex gap-x-3">
+      {comment?.userName && comment?.message &&
+        <NoRender label={comment?.userName}>
+          <div className='max-w-[250px] whitespace-pre-wrap'>{comment?.message}</div>
+        </NoRender>
+      }
+    </div>
+  );
+}
+
+
+

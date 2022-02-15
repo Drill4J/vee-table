@@ -18,14 +18,16 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run tailwind:build && react-scripts start",
+    "build": "npm run tailwind:build && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "lint:fix": "eslint src --ext tsx --fix",
-    "lint": "eslint src --ext tsx"
+    "lint": "eslint src --ext tsx",
+    "tailwind:build": "tailwind build src/tailwind.css -c tailwind.config.js -o src/compiled-tailwind.css",
+    "tailwind:watch": "npx tailwindcss -i ./src/tailwind.css -o ./src/compiled-tailwind.css --watch"
   },
   "browserslist": {
     "production": [
@@ -49,10 +51,13 @@
     "@types/react-dom": "^17.0.10",
     "@types/react-table": "^7.7.7",
     "@types/styled-components": "^5.1.15",
+    "autoprefixer": "^10.4.2",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-drill4j": "^1.0.0",
     "eslint-plugin-jest": "^25.3.4",
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^3.2.3",
+    "postcss": "^8.4.5",
+    "tailwindcss": "^3.0.15"
   },
   "eslintConfig": {
     "extends": [

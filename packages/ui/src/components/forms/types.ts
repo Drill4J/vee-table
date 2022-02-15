@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './compiled-tailwind.css';
-import './index.css';
-import App from './components/app';
+import { Ledger, LedgerData } from '@drill4j/vee-ledger';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root'),
-);
+export interface FormProps {
+  ledger: Ledger;
+  data: LedgerData;
+}

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 import React from 'react';
-import { usePagination, useTable } from 'react-table';
+import { useFilters, usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
 import { Setup, TestResult } from '@drill4j/vee-ledger';
-import ComponentsVersionsMap from '../components-versions-map';
+import DataObjectMap from '../data-object-map';
 import NoRender from '../no-render';
 import { sortBy } from './util';
 import { ColumnDetails } from './types';
 import { T } from './styles';
 import { Pagination } from './Pagination';
+import FilterByComponentsVersions from './filter-by-components-versions';
+import { RawVersion, Ledger } from '@drill4j/vee-ledger';
 
 type VersionTableProps = {
   setup: Setup;
   tests: TestResult[];
+  ledger: Ledger;
 };
 
 const S = {
@@ -39,15 +42,9 @@ const S = {
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
-  const { tests } = props;
+  const { tests, setup, ledger } = props;
   const data = React.useMemo<ColumnDetails[]>(
-    () =>
-      tests.sort(sortBy('date')).map(x => ({
-        date: x.date,
-        status: x.status,
-        description: x.description,
-        componentVersionMap: x.componentVersionMap,
-      })),
+    () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
 
@@ -61,39 +58,60 @@ export default function SetupTestsTable(props: VersionTableProps) {
         },
       },
       {
-        Header: 'Description',
-        accessor: 'description',
-        Cell: (props: any) => {
-          const text = props.row.values.description;
-          if (!text) return null;
-          // TODO move it elsewhere
-          const MAX_LEN = 10;
-          if (text.length < MAX_LEN) {
-            return text;
-          }
-          return <NoRender label={`${text.slice(0, 10)}...`}>{text}</NoRender>;
-        },
-      },
-      {
         Header: 'Status',
         accessor: 'status',
       },
       {
+        Header: 'Reason',
+        accessor: 'initiator',
+        Cell: (props: any) => {
+          const userName = props.value?.userName;
+          const reason = props.value?.reason;
+
+          return <span>{userName}: {reason}</span>
+        }
+      },
+      {
         Header: 'Versions',
         accessor: 'componentVersionMap',
+        filter: filterComponent,
+        filterable: true,
         Cell: (props: any) => {
           return (
             <NoRender label="versions">
-              <ComponentsVersionsMap data={props.row.values.componentVersionMap} />
+              <DataObjectMap data={props.row.values.componentVersionMap} />
             </NoRender>
           );
         },
+      },
+      {
+        Header: "Autotests params",
+        accessor: 'testParams',
+        Cell: (props: any) => {
+          return (
+            <NoRender label="Params">
+              <DataObjectMap data={props.value} />
+            </NoRender>
+          );
+        },
+      },
+      {
+        Header: 'Run',
+        accessor: 'linkToRun',
+        Cell: (props: any) => <a href={props.value} target="_blank" rel="noreferrer">Run details</a>
       },
     ],
     [],
   );
 
-  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE } } as any, usePagination);
+  const defaultColumn = React.useMemo(
+    () => ({
+      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props}/>,
+    }),
+    [],
+  );
+
+  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any, useFilters, usePagination);
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   const { page }: any = tableInstance;
 
@@ -108,15 +126,16 @@ export default function SetupTestsTable(props: VersionTableProps) {
               <T.Tr {...headerGroup.getHeaderGroupProps()}>
                 {
                   // Loop over the headers in each row
-                  headerGroup.headers.map(column => (
-                    // Apply the header cell props
-                    <T.Th {...column.getHeaderProps()}>
-                      {
-                        // Render the header
-                        column.render('Header')
-                      }
-                    </T.Th>
-                  ))
+                  headerGroup.headers.map((column: any) => {
+                    return (
+                      // Apply the header cell props
+                      <T.Th {...column.getHeaderProps()} >
+                        <div className="flex gap-x-2">
+                          {column.render('Header')}
+                          {column.filterable ? column.render('Filter') : null}</div>
+                      </T.Th>
+                    )
+                  })
                 }
               </T.Tr>
             ))
@@ -158,4 +177,11 @@ export default function SetupTestsTable(props: VersionTableProps) {
       <Pagination tableInstance={tableInstance} />
     </div>
   );
+}
+
+function filterComponent(rows: any, _: any, filterValue: RawVersion[]) {
+  return rows.filter((row: any) => {
+    const componentVersionMap = row.values?.componentVersionMap || {};
+    return filterValue.every(({componentId, tag}) => componentVersionMap[componentId] === tag)
+  })
 }

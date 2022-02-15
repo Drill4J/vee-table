@@ -18,68 +18,64 @@ import connection from '../../github/connection';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
 import { useState } from 'react';
-import { LedgerData } from '@drill4j/vee-ledger';
-import { Ledger } from '@drill4j/vee-ledger';
+import { FormProps } from './types';
 
 const VERSION_PLACEHOLDER = 'SemVer, e.g. x.y.z';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   if (!Array.isArray(props.data.components) || props.data.components.length === 0) {
     return <Spinner>No available components. Create components first</Spinner>;
   }
   const components = props.data.components.map(x => ({ value: x.id, label: x.name }));
   const [versionPlaceholder, setVersionPlaceholder] = useState(VERSION_PLACEHOLDER);
   return (
-    <>
-      <h3>New version</h3>
-      <Formik
-        initialValues={{ componentId: '', tag: '', date: '' }}
-        onSubmit={async (values, { setSubmitting }) => {
-          try {
-            await props.ledger.addVersion({
-              componentId: values.componentId,
-              tag: values.tag,
-            });
+    <Formik
+      initialValues={{ componentId: '', tag: '', date: '' }}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          await props.ledger.addVersion({
+            componentId: values.componentId,
+            tag: values.tag,
+          });
 
-            window.location.reload(); // pro react development
-          } catch (e) {
-            alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <label htmlFor="add-version-field-component-id">Component</label>
-            <Field
-              id="add-version-field-component-id"
-              name="componentId"
-              component={SelectField(async (componentId: string, form) => {
-                const ledger = await connection.getLedgerInstance();
-                if (!ledger) return;
-                const latestVersion = await ledger.getLatestVersion(componentId);
-                if (!latestVersion) {
-                  setVersionPlaceholder(VERSION_PLACEHOLDER);
-                  return;
-                }
-                setVersionPlaceholder(`latest is ${latestVersion.tag}`);
-              })}
-              options={components}
-            />
-            <ErrorMessage name="componentId" component="div" />
+          window.location.reload(); // pro react development
+        } catch (e) {
+          alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form>
+          <label htmlFor="add-version-field-component-id">Component</label>
+          <Field
+            id="add-version-field-component-id"
+            name="componentId"
+            component={SelectField(async (componentId: string) => {
+              const ledger = await connection.getLedgerInstance();
+              if (!ledger) return;
+              const latestVersion = await ledger.getLatestVersion(componentId);
+              if (!latestVersion) {
+                setVersionPlaceholder(VERSION_PLACEHOLDER);
+                return;
+              }
+              setVersionPlaceholder(`latest is ${latestVersion.tag}`);
+            })}
+            options={components}
+          />
+          <ErrorMessage name="componentId" component="div" />
 
-            <label htmlFor="add-version-field-tag">Version Tag</label>
-            <Field id="add-component-field-tag" type="text" name="tag" placeholder={versionPlaceholder} />
-            <ErrorMessage name="tag" component="div" />
+          <label htmlFor="add-version-field-tag">Version Tag</label>
+          <Field id="add-component-field-tag" type="text" name="tag" placeholder={versionPlaceholder} />
+          <ErrorMessage name="tag" component="div" />
 
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
-            {isSubmitting && <div>submitting...</div>}
-          </Form>
-        )}
-      </Formik>
-    </>
+          <button type="submit" disabled={isSubmitting}>
+            Submit
+          </button>
+          {isSubmitting && <div>submitting...</div>}
+        </Form>
+      )}
+    </Formik>
   );
 };

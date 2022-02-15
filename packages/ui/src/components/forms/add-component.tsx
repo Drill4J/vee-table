@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { Ledger } from '@drill4j/vee-ledger';
-import { LedgerData } from '@drill4j/vee-ledger';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => (
+export default (props: FormProps) => (
   <Formik
     initialValues={{ id: '', name: '' }}
     onSubmit={async (values, { setSubmitting }) => {
@@ -33,7 +32,6 @@ export default (props: { ledger: Ledger; data: LedgerData }) => (
   >
     {({ isSubmitting }) => (
       <Form>
-        <h3>New component</h3>
         <label htmlFor="add-component-field-id">Unique id</label>
         <Field id="add-component-field-id" type="text" name="id" placeholder="unique-dash-lower-case-id" />
         <ErrorMessage name="id" component="div" />

@@ -27,6 +27,7 @@ import {
   Version,
   ComponentsAvailableVersionsMap,
   TestResult,
+  Comment
 } from './types-internal';
 import { b64_to_utf8, utf8_to_b64, validateNonEmptyString, platform } from './util';
 
@@ -42,6 +43,7 @@ export class Ledger {
     versions: [],
     setups: [],
     tests: [],
+    comments: {}
   };
 
   public data: LedgerData | undefined; // FIXME private
@@ -123,12 +125,16 @@ export class Ledger {
       [property]: [...(this.data as any)[property], value],
     };
 
+    await this.updateLedgerData(property, newData);
+  }
+
+  private async updateLedgerData(property: string, newData: any) {
     // API reference https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
     const response = await (this.octokit as any).request(
       `PUT /repos/${this.ledgerRepo.owner}/${this.ledgerRepo.name}/contents/${this.ledgerFilePath}`,
       {
         message: `new ${property}`,
-        content: this.serialize(newData as any),
+        content: this.serialize(newData),
         sha: this.sha,
       },
     );
@@ -249,6 +255,10 @@ export class Ledger {
       throw new Error('Please specify a version for each of the components');
     }
 
+    if (!data.initiator.userName) {
+      throw new Error('user is not logged in');
+    }
+
     // existing setup
     const setup = this.getSetupById(data.setupId);
     if (!setup) {
@@ -262,13 +272,27 @@ export class Ledger {
       this.validateSetupComponentsList(data, setup.componentIds);
     }
 
-    await this.addTo('tests', {
+    await this.addTo<TestResult>('tests', {
+      ...data,
       date: Date.now(),
-      componentVersionMap: data.componentVersionMap,
-      setupId: data.setupId,
       status: data.status.trim(),
       description: data.description?.trim(),
     });
+  }
+
+  public async addComment({message, releaseComponentDate, userName}: Comment) {
+    if(!releaseComponentDate) {
+      throw new Error('Please leave the message for published version');
+    }
+    validateNonEmptyString('message', message);
+    validateNonEmptyString('userName', userName);
+
+    const newData: LedgerData = {
+      ...this.data,
+      comments: {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}},
+    };
+
+    return this.updateLedgerData('comments', newData);
   }
 
   private validateSetupComponentsList(data: RawTestResult, setupComponentIds?: string[]) {

@@ -8,5 +8,6 @@ export {
   Version,
   ComponentsAvailableVersionsMap,
   TestResult,
+  Comment
 } from './types-internal';
 export { Ledger } from './index';

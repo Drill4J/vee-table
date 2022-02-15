@@ -16,89 +16,89 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import SelectField from './generic/select-field';
 import Spinner from '../spinner';
-import { Component, LedgerData } from '@drill4j/vee-ledger';
+import { Component } from '@drill4j/vee-ledger';
 import { useEffect, useMemo, useState } from 'react';
 import { Ledger } from '@drill4j/vee-ledger';
 import { startsWith, stripPrefix } from './util';
 import Question from '../question';
 import Alert from '../alert';
+import useUser from '../../github/hooks/use-user';
+import { FormProps } from './types';
 
-export default (props: { ledger: Ledger; data: LedgerData }) => {
+export default (props: FormProps) => {
   if (!Array.isArray(props.data.setups) || props.data.setups.length === 0) {
     return <Spinner>No available setups. Create setups first</Spinner>;
   }
   const setups = props.data.setups.map(x => ({ value: x.id, label: x.name }));
   const [components, setComponents] = useState<Component[]>([]);
+  const { data: userData } = useUser();
+
   return (
-    <>
-      <h3>New test result</h3>
-      <Formik
-        initialValues={{ setupId: '', status: '', description: '', componentVersionMap: {} }}
-        onSubmit={async ({ setupId, status, description, ...other }, { setSubmitting }) => {
-          try {
-            const componentVersionMap = Object.entries(other)
-              .filter(([key]) => startsWith('component-')(key))
-              .reduce((a: Record<string, string>, [key, version]) => {
-                a[stripPrefix('component-')(key)] = version;
-                return a;
-              }, {});
+    <Formik
+      initialValues={{ setupId: '', status: '', description: '', componentVersionMap: {} }}
+      onSubmit={async ({ setupId, status, description, ...other }, { setSubmitting }) => {
+        try {
+          const componentVersionMap = Object.entries(other)
+            .filter(([key]) => startsWith('component-')(key))
+            .reduce((a: Record<string, string>, [key, version]) => {
+              a[stripPrefix('component-')(key)] = version;
+              return a;
+            }, {});
 
-            await props.ledger.addTest({
-              setupId,
-              status,
-              componentVersionMap,
-              description,
-            });
+          await props.ledger.addTest({
+            setupId,
+            status,
+            componentVersionMap,
+            description,
+            initiator: {
+              userName: userData?.name,
+              reason: 'User launched test',
+            },
+          });
 
-            window.location.reload(); // pro react development
-          } catch (e) {
-            alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
-            // not so sure about that finally
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <label htmlFor="add-test-field-setup-id">Setup</label>
-            <Field
-              id="add-test-field-setup-id"
-              name={'setupId'}
-              component={SelectField(async (setupId: string, form) => {
-                const components = await props.ledger.getSetupComponents(setupId);
-                setComponents(components);
-                form.resetForm({
-                  values: { setupId, status: form.values.status, description: form.values.description, componentVersionMap: {} },
-                });
-              })}
-              options={setups}
-            />
-            <ErrorMessage name="setupId" component="div" />
+          window.location.reload(); // pro react development
+        } catch (e) {
+          alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
+          // not so sure about that finally
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form>
+          <label htmlFor="add-test-field-setup-id">Setup</label>
+          <Field
+            id="add-test-field-setup-id"
+            name={'setupId'}
+            component={SelectField(async (setupId: string, form) => {
+              const components = await props.ledger.getSetupComponents(setupId);
+              setComponents(components);
+              form.resetForm({
+                values: { setupId, status: form.values.status, description: form.values.description, componentVersionMap: {} },
+              });
+            })}
+            options={setups}
+          />
+          <ErrorMessage name="setupId" component="div" />
 
-            <label htmlFor="add-test-field-status">Status</label>
-            <Field id="add-component-field-status" type="text" name="status" placeholder="anything (passed, failed?)" />
-            <ErrorMessage name="status" component="div" />
+          <label htmlFor="add-test-field-status">Status</label>
+          <Field id="add-component-field-status" type="text" name="status" placeholder="anything (passed, failed?)" />
+          <ErrorMessage name="status" component="div" />
 
-            <label htmlFor="add-test-field-description">Description (optional)</label>
-            <Field id="add-component-field-description" type="text" name="description" placeholder="something informative" />
-            <ErrorMessage name="description" component="div" />
+          <label htmlFor="add-test-field-description">Description (optional)</label>
+          <Field id="add-component-field-description" type="text" name="description" placeholder="something informative" />
+          <ErrorMessage name="description" component="div" />
 
-            <label htmlFor="add-test-field-status">Component Versions</label>
-            <Versions components={components} ledger={props.ledger} />
-            <button type="submit" disabled={isSubmitting}>
-              Submit
-            </button>
-            {isSubmitting && <div>submitting...</div>}
-          </Form>
-        )}
-      </Formik>
-      <Question>
-        <span>IDEA #1: Allow to configure hook on test result submission</span>
-        <br />
-        <span>| {'e.g. if (test.status === "failed") req.("POST our.mail.proxy/?recipients={setup.maintainers}", test)'}</span>
-      </Question>
-    </>
+          <label htmlFor="add-test-field-status">Component Versions</label>
+          <Versions components={components} ledger={props.ledger} />
+          <button type="submit" disabled={isSubmitting}>
+            Submit
+          </button>
+          {isSubmitting && <div>submitting...</div>}
+        </Form>
+      )}
+    </Formik>
   );
 };
 

@@ -27,6 +27,10 @@ button:focus {
   cursor: pointer;
 }
 
+textarea {
+  resize: both;
+}
+
 .main-ui {
   padding-top: 39px;
 }
