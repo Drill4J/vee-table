@@ -19,7 +19,7 @@ import VersionsSelect from '../versions-select'
 import { Ledger, RawVersion } from '@drill4j/vee-ledger';
 import { useClickOutside } from '../../hooks/use-click-outside';
 
-export default function DefaultColumnFilter({ setupId, ledger, column: { setFilter }}: {setupId: string, ledger: Ledger, column: any}) {
+export default function FilterByComponentsVersions({ setupId, ledger, column: { setFilter }}: {setupId: string, ledger: Ledger, column: any}) {
   const [isOpen, setIsOpen] = useState(false);
   const components = ledger?.getSetupComponents(setupId) || [];
   const ref = useClickOutside(() => setIsOpen(false))

@@ -24,7 +24,7 @@ import { sortBy } from './util';
 import { ColumnDetails } from './types';
 import { T } from './styles';
 import { Pagination } from './Pagination';
-import DefaultColumnFilter from './default-column-filter';
+import FilterByComponentsVersions from './filter-by-components-versions';
 import { RawVersion, Ledger } from '@drill4j/vee-ledger';
 
 type VersionTableProps = {
@@ -106,7 +106,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
 
   const defaultColumn = React.useMemo(
     () => ({
-      Filter: (props: any) => <DefaultColumnFilter setupId={setup.id} ledger={ledger} {...props}/>,
+      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props}/>,
     }),
     [],
   );
