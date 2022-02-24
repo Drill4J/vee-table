@@ -133,7 +133,7 @@ function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
         </span>
       ))}
       {selectedModal && (
-        <div className="absolute top-10 flex flex-col bg-shade3 p-3 min-w-[350px] max-w-[500px]">
+        <div className="absolute top-10 flex flex-col bg-shade3 p-3 min-w-[350px]">
           {modals.map(({ label, Form }) => selectedModal === label && <Form ledger={ledger} data={data} />)}
         </div>
       )}

@@ -18,36 +18,33 @@ import Alert from './alert';
 import { Field, useFormikContext } from 'formik';
 import SelectField from './forms/generic/select-field';
 import { Ledger } from '@drill4j/vee-ledger';
-import useVersions from '../github/hooks/use-versions'
+import useVersions from '../github/hooks/use-versions';
 
-
-export default function (props: { ledger: Ledger; componentIds: string[], fieldNamePrefix: string }) {
+export default function (props: { ledger: Ledger; componentIds: string[]; fieldNamePrefix: string }) {
   const { isLoading: isLoadingVersionsData, vers, error } = useVersions(props.componentIds, props.ledger);
-  const { values } = useFormikContext<{isCustomVersion: Record<string, boolean>}>();
+  const { values } = useFormikContext<{ isCustomVersion: Record<string, boolean> }>();
 
   if (!Array.isArray(props.componentIds) || props.componentIds.length === 0) return <Spinner>...select setup first</Spinner>;
   if (isLoadingVersionsData) return <Spinner>loading versions</Spinner>;
   if (error) return <Alert>{error}</Alert>;
 
   return (
-    <table style={{borderSpacing: "4px", borderCollapse: "separate"}}>
+    <table style={{ borderSpacing: '4px', borderCollapse: 'separate' }}>
       <tbody>
-        {props.componentIds.map(id  => (
+        {props.componentIds.map(id => (
           <tr key={id}>
             <td>
-              <label htmlFor={`custom-version-${id}`} className="mr-2">Custom</label>
-              <Field
-                id={`custom-version-${id}`}
-                name={`isCustomVersion.${id}`}
-                type={'checkbox'}
-              />
+              <label htmlFor={`custom-version-${id}`} className="mr-2">
+                Custom
+              </label>
+              <Field id={`custom-version-${id}`} name={`isCustomVersion.${id}`} type={'checkbox'} />
             </td>
             <td>
               <label style={{ cursor: 'pointer' }} htmlFor={`${props.fieldNamePrefix}-${id}`}>
                 {id}
               </label>
             </td>
-            <td>
+            <td className="min-w-[220px]">
               {!Array.isArray(vers[id]) ? (
                 'no versions'
               ) : (
