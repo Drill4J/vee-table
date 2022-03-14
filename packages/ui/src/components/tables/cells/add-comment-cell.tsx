@@ -40,7 +40,7 @@ export default function AddCommentCell({ releaseComponentDate, user, ledger, com
           initialValues={{ message: previousMessage }}
           onSubmit={async ({ message }) => {
             try {
-              await ledger.addComment({ releaseComponentDate, message, userName: user?.name });
+              await ledger.addComment({ releaseComponentDate, message, userName: user?.login });
               window.location.reload();
             } catch (e) {
               alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
