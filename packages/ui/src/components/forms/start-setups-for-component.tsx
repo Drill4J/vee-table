@@ -41,7 +41,7 @@ export default (props: FormProps) => {
             componentId,
             versions,
             initiator: {
-              userName: useData.name,
+              userName: useData.login,
               reason: 'Manual start tests for component',
             },
           });

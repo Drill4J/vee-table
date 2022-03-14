@@ -40,7 +40,7 @@ export default (props: FormProps) => {
           const response = await e2e.startAllSetups({
             versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
             initiator: {
-              userName: useData.name,
+              userName: useData.login,
               reason: 'Manual start all setups',
             },
           });

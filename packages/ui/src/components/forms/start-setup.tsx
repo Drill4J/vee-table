@@ -59,7 +59,7 @@ export default (props: FormProps) => {
             cypressEnv: autotestsSetups[setupId].cypressEnv,
             specFile: autotestsSetups[setupId].file,
             initiator: {
-              userName: useData.name,
+              userName: useData.login,
               reason: 'Manual start setup with parameter',
             },
           });
