@@ -67,7 +67,6 @@ export default (props: FormProps) => {
             alert(`Failed to start setup: ${response.status}`);
           } else {
             alert('Setup started successfully');
-            form.resetForm({ values: initialValues });
           }
         } catch (e) {
           alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
