@@ -36,7 +36,6 @@ import { DebugData } from './DebugData';
 import NoRender from './no-render';
 import { ElapsedSinceChange } from './elapsed-since-change';
 import React, { useState } from 'react';
-import { useClickOutside } from '../hooks/use-click-outside';
 import { FormProps } from './forms/types';
 
 function App() {
@@ -121,11 +120,11 @@ interface Modal {
 function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
   const [selectedModal, setSelectedModal] = useState<string | null>(null);
   const { data, ledger } = useLedgerData();
-  const ref = useClickOutside(() => setSelectedModal(null));
+
   if (!data || !ledger) return null;
 
   return (
-    <div className="flex gap-x-3 p-2" ref={ref}>
+    <div className="flex gap-x-3 p-2">
       {label}:
       {modals.map(({ label }) => (
         <span className="link" onClick={() => setSelectedModal(label)}>
@@ -134,7 +133,17 @@ function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
       ))}
       {selectedModal && (
         <div className="absolute top-10 flex flex-col bg-shade3 p-3 min-w-[350px]">
-          {modals.map(({ label, Form }) => selectedModal === label && <Form ledger={ledger} data={data} />)}
+          {modals.map(
+            ({ label, Form }) =>
+              selectedModal === label && (
+                <div>
+                  <Form ledger={ledger} data={data} />
+                  <button className="w-full" type="button" onClick={() => setSelectedModal(null)}>
+                    Close
+                  </button>
+                </div>
+              ),
+          )}
         </div>
       )}
     </div>
