@@ -19,7 +19,7 @@ import { RawVersion } from '@drill4j/vee-ledger/src/types-internal';
 import { AutotestsSetup } from '../../../e2e/types';
 
 interface Props {
-  params: string;
+  params: Record<string, string>;
   componentsVersions: Record<string, string>;
   userLogin: string;
   autotestsSetups: Record<string, AutotestsSetup>;
@@ -28,7 +28,6 @@ interface Props {
 
 export default function RestartRunCell(props: Props) {
   const { params, componentsVersions, autotestsSetups, userLogin, setupId } = props;
-
   return (
     <button
       className="w-full"
@@ -36,7 +35,7 @@ export default function RestartRunCell(props: Props) {
         try {
           const response = await e2e.startSetup({
             versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
-            params: JSON.parse(params),
+            params: params,
             setupId,
             cypressEnv: autotestsSetups[setupId].cypressEnv,
             specFile: autotestsSetups[setupId].file,
