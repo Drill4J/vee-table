@@ -26,7 +26,7 @@ interface Props {
   setupId: string;
 }
 
-export default function RetryRunCell(props: Props) {
+export default function RestartRunCell(props: Props) {
   const { params, componentsVersions, autotestsSetups, userLogin, setupId } = props;
 
   return (

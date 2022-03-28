@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useFilters, usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
@@ -26,9 +26,8 @@ import { T } from './styles';
 import { Pagination } from './Pagination';
 import FilterByComponentsVersions from './filter-by-components-versions';
 import { RawVersion, Ledger } from '@drill4j/vee-ledger';
-import RetryRunCell from './cells/retry-run-cell';
+import RestartRunCell from './cells/restart-run-cell';
 import useUser from '../../github/hooks/use-user';
-import e2e from '../../e2e';
 import { useAutotestsSetups } from '../../e2e/use-autotests-setups';
 
 type VersionTableProps = {
@@ -115,10 +114,10 @@ export default function SetupTestsTable(props: VersionTableProps) {
         ),
       },
       {
-        Header: 'Retry Run',
-        accessor: 'retry', //this property does not exists
+        Header: 'Restart Run',
+        accessor: 'Restart', //this property does not exists
         Cell: (props: any) => (
-          <RetryRunCell
+          <RestartRunCell
             userLogin={userData?.login}
             componentsVersions={props.row.original.componentVersionMap}
             params={props.row.original.testParams}
