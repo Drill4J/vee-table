@@ -78,9 +78,9 @@ export default function VersionTable(props: VersionTableProps) {
         accessor: 'add-comment',
         Cell: (props: any) => (
           <AddCommentCell
-            releaseComponentDate={props.row.values.release}
-            user={userData}
-            ledger={ledger}
+            addComment={message =>
+              ledger.addComment({ releaseComponentDate: props.row.values.release, message, userName: userData?.login })
+            }
             comment={comments[props.row.values.release]}
           />
         ),
@@ -107,7 +107,7 @@ export default function VersionTable(props: VersionTableProps) {
         <S.Table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup, i) => (
-              <>
+              <React.Fragment key={`headerGroup_0_${i}`}>
                 <T.Tr {...{ ...headerGroup.getHeaderGroupProps(), key: `headerGroup_0_${i}` }}>
                   {headerGroup.headers.map(column => {
                     return (
@@ -126,7 +126,7 @@ export default function VersionTable(props: VersionTableProps) {
                     );
                   })}
                 </T.Tr>
-              </>
+              </React.Fragment>
             ))}
           </thead>
           {/* Apply the table body props */}

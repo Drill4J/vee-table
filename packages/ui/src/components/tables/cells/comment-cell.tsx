@@ -15,24 +15,22 @@
  */
 import { Comment } from '@drill4j/vee-ledger';
 import NoRender from '../../no-render';
+import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
 
 interface Props {
-  comment?: Comment
+  comment?: Comment | TestComment;
 }
 
 export default function CommentCell(props: Props) {
-  const { comment } = props
+  const { comment } = props;
 
   return (
     <div className="flex gap-x-3">
-      {comment?.userName && comment?.message &&
+      {comment?.userName && comment?.message && (
         <NoRender label={comment?.userName}>
-          <div className='max-w-[250px] whitespace-pre-wrap'>{comment?.message}</div>
+          <div className="max-w-[250px] whitespace-pre-wrap">{comment?.message}</div>
         </NoRender>
-      }
+      )}
     </div>
   );
 }
-
-
-

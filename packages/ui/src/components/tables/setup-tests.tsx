@@ -26,14 +26,16 @@ import { T } from './styles';
 import { Pagination } from './Pagination';
 import FilterByComponentsVersions from './filter-by-components-versions';
 import { RawVersion, Ledger } from '@drill4j/vee-ledger';
-import RestartRunCell from './cells/restart-run-cell';
 import useUser from '../../github/hooks/use-user';
-import { useAutotestsSetups } from '../../e2e/use-autotests-setups';
+import CommentCell from './cells/comment-cell';
+import AddCommentCell from './cells/add-comment-cell';
+import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
 
 type VersionTableProps = {
   setup: Setup;
   tests: TestResult[];
   ledger: Ledger;
+  comments: Record<string, Record<string, TestComment>>;
 };
 
 const S = {
@@ -45,13 +47,13 @@ const S = {
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
-  const { tests, setup, ledger } = props;
+  const { tests, setup, ledger, comments = {} } = props;
+  const setupComments = comments[setup.id] || {};
   const data = React.useMemo<ColumnDetails[]>(
     () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
   const { data: userData } = useUser();
-  const autotestsSetups = useAutotestsSetups();
 
   const columns = React.useMemo(
     () => [
@@ -113,21 +115,31 @@ export default function SetupTestsTable(props: VersionTableProps) {
           </a>
         ),
       },
-      // {
-      //   Header: 'Restart Run',
-      //   accessor: 'Restart', //this property does not exists
-      //   Cell: (props: any) => (
-      //     <RestartRunCell
-      //       userLogin={userData?.login}
-      //       componentsVersions={props.row.original.componentVersionMap}
-      //       params={props.row.original.testParams}
-      //       autotestsSetups={autotestsSetups}
-      //       setupId={setup.id}
-      //     />
-      //   ),
-      // },
+      {
+        Header: 'Description',
+        accessor: 'description',
+      },
+      {
+        Header: 'Comments',
+        Latest: '',
+        accessor: 'testComments',
+        Cell: (props: any) => <CommentCell comment={setupComments[props.row.values.date]} />,
+      },
+      {
+        Header: '',
+        Latest: '',
+        accessor: 'add-comment',
+        Cell: (props: any) => (
+          <AddCommentCell
+            addComment={message =>
+              ledger.addTestComment({ publishResultsDate: props.row.values.date, message, userName: userData?.login, setupId: setup.id })
+            }
+            comment={setupComments[props.row.values.date]}
+          />
+        ),
+      },
     ],
-    [],
+    [userData, setup.id],
   );
 
   const defaultColumn = React.useMemo(

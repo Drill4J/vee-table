@@ -16,16 +16,15 @@
 import { useState } from 'react';
 import { useClickOutside } from '../../../hooks/use-click-outside';
 import { Field, Form, Formik } from 'formik';
-import { Ledger, Comment } from '@drill4j/vee-ledger';
+import { Comment } from '@drill4j/vee-ledger';
+import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
 
 interface Props {
-  releaseComponentDate: number;
-  user: any;
-  ledger: Ledger;
-  comment?: Comment;
+  comment?: Comment | TestComment;
+  addComment: (message: string) => Promise<void>;
 }
 
-export default function AddCommentCell({ releaseComponentDate, user, ledger, comment }: Props) {
+export default function AddCommentCell({ comment, addComment }: Props) {
   const { message: previousMessage = '' } = comment || {};
   const [isOpen, setIsOpen] = useState(false);
   const ref = useClickOutside(() => setIsOpen(false));
@@ -40,7 +39,7 @@ export default function AddCommentCell({ releaseComponentDate, user, ledger, com
           initialValues={{ message: previousMessage }}
           onSubmit={async ({ message }) => {
             try {
-              await ledger.addComment({ releaseComponentDate, message, userName: user?.login });
+              await addComment(message);
               window.location.reload();
             } catch (e) {
               alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));

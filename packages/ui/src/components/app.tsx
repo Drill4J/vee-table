@@ -103,7 +103,7 @@ function RenderStuff() {
           return (
             <div className="mb-3" key={setup.id}>
               <h5>{setup.name}</h5>
-              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger} />
+              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger} comments={data.testComments} />
             </div>
           );
         })}
