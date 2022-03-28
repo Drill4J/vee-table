@@ -113,21 +113,21 @@ export default function SetupTestsTable(props: VersionTableProps) {
           </a>
         ),
       },
-      {
-        Header: 'Restart Run',
-        accessor: 'Restart', //this property does not exists
-        Cell: (props: any) => (
-          <RestartRunCell
-            userLogin={userData?.login}
-            componentsVersions={props.row.original.componentVersionMap}
-            params={props.row.original.testParams}
-            autotestsSetups={autotestsSetups}
-            setupId={setup.id}
-          />
-        ),
-      },
+      // {
+      //   Header: 'Restart Run',
+      //   accessor: 'Restart', //this property does not exists
+      //   Cell: (props: any) => (
+      //     <RestartRunCell
+      //       userLogin={userData?.login}
+      //       componentsVersions={props.row.original.componentVersionMap}
+      //       params={props.row.original.testParams}
+      //       autotestsSetups={autotestsSetups}
+      //       setupId={setup.id}
+      //     />
+      //   ),
+      // },
     ],
-    [autotestsSetups, userData, setup.id],
+    [],
   );
 
   const defaultColumn = React.useMemo(
