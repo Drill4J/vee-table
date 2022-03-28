@@ -118,11 +118,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Description',
         accessor: 'description',
-        Cell: ({ value }: any) => (
-          <div title={value} className={'max-w-[400px] truncate'}>
-            {value}
-          </div>
-        ),
+        Cell: ({ value }: any) => <NoRender label={value.slice(0, 60)}>{value}</NoRender>,
       },
       {
         Header: 'Comments',
