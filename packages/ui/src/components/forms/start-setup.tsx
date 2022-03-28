@@ -49,25 +49,27 @@ export default (props: FormProps) => {
 
   return (
     <Formik
-      initialValues={{ setupId: '', isCustomParams: false, componentsVersions: {}, params: '' }}
-      onSubmit={async ({ setupId, componentsVersions, params }, form) => {
+      initialValues={{ setupId: '', isCustomParams: false, componentsVersions: {}, params: '', repeatsCount: 1 }}
+      onSubmit={async ({ setupId, componentsVersions, params, repeatsCount }, form) => {
+        let countOfSuccessfullyStartedSetups = 0;
         try {
-          const response = await e2e.startSetup({
-            versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
-            params: JSON.parse(params),
-            setupId,
-            cypressEnv: autotestsSetups[setupId].cypressEnv,
-            specFile: autotestsSetups[setupId].file,
-            initiator: {
-              userName: useData.login,
-              reason: 'Manual start setup with parameter',
-            },
-          });
-          if (!response.ok) {
-            alert(`Failed to start setup: ${response.status}`);
-          } else {
-            alert('Setup started successfully');
+          for (let i = 1; i <= repeatsCount; i++) {
+            const response = await e2e.startSetup({
+              versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
+              params: JSON.parse(params),
+              setupId,
+              cypressEnv: autotestsSetups[setupId].cypressEnv,
+              specFile: autotestsSetups[setupId].file,
+              initiator: {
+                userName: useData.login,
+                reason: 'Manual start setup with parameter',
+              },
+            });
+            if (response.ok) {
+              countOfSuccessfullyStartedSetups += 1;
+            }
           }
+          alert(`Successfully started ${countOfSuccessfullyStartedSetups} of ${repeatsCount} setups`);
         } catch (e) {
           alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
         }
@@ -96,6 +98,8 @@ export default (props: FormProps) => {
           {values.setupId && <FormSetParams values={values} autotestsSetups={autotestsSetups} />}
           <label htmlFor="add-test-field-status">Component Versions</label>
           <VersionsSelect componentIds={componentIds} ledger={props.ledger} fieldNamePrefix={'componentsVersions'} />
+          <label htmlFor="repeatsCount">Repeats count</label>
+          <Field id="repeatsCount" name={'repeatsCount'} placeholder={'Repeats count'} type={'number'} min={1} />
           <button type="submit" disabled={isSubmitting}>
             Submit
           </button>
