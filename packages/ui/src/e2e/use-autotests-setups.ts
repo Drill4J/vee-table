@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Comment } from '@drill4j/vee-ledger';
-import NoRender from '../../no-render';
-import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
+import { useEffect, useState } from 'react';
+import { AutotestsSetup } from './types';
+import e2e from './index';
 
-interface Props {
-  comment?: Comment | TestComment;
-}
+export const useAutotestsSetups = () => {
+  const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
 
-export default function CommentCell(props: Props) {
-  const { comment } = props;
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await e2e.getSetups();
+        setAutotestsSetups(data);
+      } catch (e) {
+        alert('Failed fetch setups from e2e repo: ' + (e as any)?.message || JSON.stringify(e));
+      }
+    })();
+  }, []);
 
-  return (
-    <div className="flex gap-x-3">
-      {comment?.userName && comment?.message && (
-        <NoRender label={comment?.userName}>
-          <div className="max-w-[250px] whitespace-pre-wrap">{comment?.message}</div>
-        </NoRender>
-      )}
-    </div>
-  );
-}
+  return autotestsSetups;
+};

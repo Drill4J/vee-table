@@ -103,7 +103,7 @@ function RenderStuff() {
           return (
             <div className="mb-3" key={setup.id}>
               <h5>{setup.name}</h5>
-              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger} />
+              <SetupTestsTable setup={setup} tests={setupTests} ledger={ledger} comments={data.testComments} />
             </div>
           );
         })}
@@ -127,12 +127,12 @@ function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
     <div className="flex gap-x-3 p-2">
       {label}:
       {modals.map(({ label }) => (
-        <span className="link" onClick={() => setSelectedModal(label)}>
+        <span className="link" onClick={() => setSelectedModal(label)} key={label}>
           {label}
         </span>
       ))}
       {selectedModal && (
-        <div className="absolute top-10 flex flex-col bg-shade3 p-3 min-w-[350px]">
+        <div className="absolute top-10 flex flex-col bg-shade3 p-3 min-w-[350px] w-8/12">
           {modals.map(
             ({ label, Form }) =>
               selectedModal === label && (

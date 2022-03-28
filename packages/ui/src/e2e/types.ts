@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Comment } from '@drill4j/vee-ledger';
-import NoRender from '../../no-render';
-import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
-
-interface Props {
-  comment?: Comment | TestComment;
+export interface AutotestsSetup {
+  file: string;
+  cypressEnv: Record<string, string>;
+  params: Record<string, string>[];
 }
 
-export default function CommentCell(props: Props) {
-  const { comment } = props;
-
-  return (
-    <div className="flex gap-x-3">
-      {comment?.userName && comment?.message && (
-        <NoRender label={comment?.userName}>
-          <div className="max-w-[250px] whitespace-pre-wrap">{comment?.message}</div>
-        </NoRender>
-      )}
-    </div>
-  );
+export interface Branch {
+  commit: { sha: string };
+  sha: string;
+  url: string;
+  name: string;
+  protected: boolean;
 }

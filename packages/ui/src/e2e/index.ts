@@ -15,14 +15,22 @@
  */
 import { RawVersion, Initiator } from '@drill4j/vee-ledger/src/types-internal';
 import connection from '../github/connection';
-
-export const getSetups =  async () =>  {
-  const res = await fetch("https://raw.githubusercontent.com/Drill4J/e2e/main/setups.json")
-  if(!res.ok) {
-    throw new Error(res.statusText)
+import { Branch } from './types';
+export const getSetups = async () => {
+  const res = await fetch('https://raw.githubusercontent.com/Drill4J/e2e/main/setups.json');
+  if (!res.ok) {
+    throw new Error(res.statusText);
   }
   return await res.json();
-}
+};
+
+export const getBranches = async (): Promise<Branch[]> => {
+  const res = await fetch('https://api.github.com/repos/Drill4J/e2e/branches');
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return await res.json();
+};
 
 interface StartSetupsForComponentPayload {
   versions: RawVersion[];
@@ -42,42 +50,44 @@ interface StartSetupPayload {
   cypressEnv: Record<string, string>;
   specFile: string;
   initiator: Initiator;
+  ref?: string;
 }
 
 const startSetupsForComponent = async (payload: StartSetupsForComponentPayload) => {
   return dispatchToE2e({
-    event_type: "run_test_for_component",
-    client_payload: payload
-  })
-}
+    event_type: 'run_test_for_component',
+    client_payload: payload,
+  });
+};
 
-const startSetup =  async (payload: StartSetupPayload) => {
+const startSetup = async (payload: StartSetupPayload) => {
   return dispatchToE2e({
-    event_type: "run_setup",
-    client_payload: payload
-  })
-}
+    event_type: 'run_setup',
+    client_payload: payload,
+  });
+};
 
 const startAllSetups = async (payload: StartAllSetupsPayload) => {
   return dispatchToE2e({
-    event_type: "run_all_setups",
-    client_payload: payload
-  })
-}
+    event_type: 'run_all_setups',
+    client_payload: payload,
+  });
+};
 
 function dispatchToE2e(body: any) {
-  return fetch("https://api.github.com/repos/Drill4J/e2e/dispatches", {
-    method: "POST",
+  return fetch('https://api.github.com/repos/Drill4J/e2e/dispatches', {
+    method: 'POST',
     body: JSON.stringify(body),
     headers: {
-      "Authorization": `Bearer ${connection.getAuthToken()}`
-    }
-  })
+      Authorization: `Bearer ${connection.getAuthToken()}`,
+    },
+  });
 }
 
 export default {
   startAllSetups,
   startSetup,
   startSetupsForComponent,
-  getSetups
-}
+  getSetups,
+  getBranches,
+};

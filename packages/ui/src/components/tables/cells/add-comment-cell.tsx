@@ -16,16 +16,15 @@
 import { useState } from 'react';
 import { useClickOutside } from '../../../hooks/use-click-outside';
 import { Field, Form, Formik } from 'formik';
-import { Ledger, Comment } from '@drill4j/vee-ledger';
+import { Comment } from '@drill4j/vee-ledger';
+import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
 
 interface Props {
-  releaseComponentDate: number;
-  user: any;
-  ledger: Ledger;
-  comment?: Comment;
+  comment?: Comment | TestComment;
+  addComment: (message: string) => Promise<void>;
 }
 
-export default function AddCommentCell({ releaseComponentDate, user, ledger, comment }: Props) {
+export default function AddCommentCell({ comment, addComment }: Props) {
   const { message: previousMessage = '' } = comment || {};
   const [isOpen, setIsOpen] = useState(false);
   const ref = useClickOutside(() => setIsOpen(false));
@@ -40,7 +39,7 @@ export default function AddCommentCell({ releaseComponentDate, user, ledger, com
           initialValues={{ message: previousMessage }}
           onSubmit={async ({ message }) => {
             try {
-              await ledger.addComment({ releaseComponentDate, message, userName: user?.login });
+              await addComment(message);
               window.location.reload();
             } catch (e) {
               alert('Action failed: ' + (e as any)?.message || JSON.stringify(e));
@@ -67,9 +66,9 @@ const AddCommentSvg = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />

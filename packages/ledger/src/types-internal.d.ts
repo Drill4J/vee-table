@@ -21,12 +21,19 @@ export type LedgerData = {
   setups: Setup[];
   tests: TestResult[];
   comments: Record<string, Comment>;
+  testComments: Record<string, Record<string, TestComment>>;
 };
 
 export type Comment = {
   userName: string;
   message: string;
   releaseComponentDate: number;
+};
+
+export type TestComment = {
+  userName: string;
+  message: string;
+  publishResultsDate: number;
 };
 
 export type Component = {

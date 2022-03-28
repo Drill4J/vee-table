@@ -27,7 +27,8 @@ import {
   Version,
   ComponentsAvailableVersionsMap,
   TestResult,
-  Comment
+  Comment,
+  TestComment,
 } from './types-internal';
 import { b64_to_utf8, utf8_to_b64, validateNonEmptyString, platform } from './util';
 
@@ -43,7 +44,8 @@ export class Ledger {
     versions: [],
     setups: [],
     tests: [],
-    comments: {}
+    comments: {},
+    testComments: {},
   };
 
   public data: LedgerData | undefined; // FIXME private
@@ -280,8 +282,8 @@ export class Ledger {
     });
   }
 
-  public async addComment({message, releaseComponentDate, userName}: Comment) {
-    if(!releaseComponentDate) {
+  public async addComment({ message, releaseComponentDate, userName }: Comment) {
+    if (!releaseComponentDate) {
       throw new Error('Please leave the message for published version');
     }
     validateNonEmptyString('message', message);
@@ -289,10 +291,31 @@ export class Ledger {
 
     const newData: LedgerData = {
       ...this.data,
-      comments: {...this.data.comments, [releaseComponentDate]: {message, userName, releaseComponentDate}},
+      comments: { ...this.data.comments, [releaseComponentDate]: { message, userName, releaseComponentDate } },
     };
 
     return this.updateLedgerData('comments', newData);
+  }
+
+  public async addTestComment({ setupId, message, publishResultsDate, userName }: TestComment & { setupId: string }) {
+    if (!publishResultsDate) {
+      throw new Error('Please leave the message for published version');
+    }
+    validateNonEmptyString('message', message);
+    validateNonEmptyString('userName', userName);
+
+    const newData: LedgerData = {
+      ...this.data,
+      testComments: {
+        ...this.data?.testComments,
+        [setupId]: {
+          ...this.data?.testComments[setupId],
+          [publishResultsDate]: { message, userName, publishResultsDate },
+        },
+      },
+    };
+
+    return this.updateLedgerData('testComments', newData);
   }
 
   private validateSetupComponentsList(data: RawTestResult, setupComponentIds?: string[]) {

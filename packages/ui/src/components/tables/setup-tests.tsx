@@ -26,11 +26,16 @@ import { T } from './styles';
 import { Pagination } from './Pagination';
 import FilterByComponentsVersions from './filter-by-components-versions';
 import { RawVersion, Ledger } from '@drill4j/vee-ledger';
+import useUser from '../../github/hooks/use-user';
+import CommentCell from './cells/comment-cell';
+import AddCommentCell from './cells/add-comment-cell';
+import { TestComment } from '@drill4j/vee-ledger/src/types-internal';
 
 type VersionTableProps = {
   setup: Setup;
   tests: TestResult[];
   ledger: Ledger;
+  comments: Record<string, Record<string, TestComment>>;
 };
 
 const S = {
@@ -42,11 +47,13 @@ const S = {
 
 const INIT_PAGE_SIZE = 5;
 export default function SetupTestsTable(props: VersionTableProps) {
-  const { tests, setup, ledger } = props;
+  const { tests, setup, ledger, comments = {} } = props;
+  const setupComments = comments[setup.id] || {};
   const data = React.useMemo<ColumnDetails[]>(
     () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
+  const { data: userData } = useUser();
 
   const columns = React.useMemo(
     () => [
@@ -68,8 +75,12 @@ export default function SetupTestsTable(props: VersionTableProps) {
           const userName = props.value?.userName;
           const reason = props.value?.reason;
 
-          return <span>{userName}: {reason}</span>
-        }
+          return (
+            <span>
+              {userName}: {reason}
+            </span>
+          );
+        },
       },
       {
         Header: 'Versions',
@@ -85,7 +96,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
         },
       },
       {
-        Header: "Autotests params",
+        Header: 'Autotests params',
         accessor: 'testParams',
         Cell: (props: any) => {
           return (
@@ -98,20 +109,51 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Run',
         accessor: 'linkToRun',
-        Cell: (props: any) => <a href={props.value} target="_blank" rel="noreferrer">Run details</a>
+        Cell: (props: any) => (
+          <a href={props.value} target="_blank" rel="noreferrer">
+            Run details
+          </a>
+        ),
+      },
+      {
+        Header: 'Description',
+        accessor: 'description',
+      },
+      {
+        Header: 'Comments',
+        Latest: '',
+        accessor: 'testComments',
+        Cell: (props: any) => <CommentCell comment={setupComments[props.row.values.date]} />,
+      },
+      {
+        Header: '',
+        Latest: '',
+        accessor: 'add-comment',
+        Cell: (props: any) => (
+          <AddCommentCell
+            addComment={message =>
+              ledger.addTestComment({ publishResultsDate: props.row.values.date, message, userName: userData?.login, setupId: setup.id })
+            }
+            comment={setupComments[props.row.values.date]}
+          />
+        ),
       },
     ],
-    [],
+    [userData, setup.id],
   );
 
   const defaultColumn = React.useMemo(
     () => ({
-      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props}/>,
+      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props} />,
     }),
     [],
   );
 
-  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any, useFilters, usePagination);
+  const tableInstance = useTable(
+    { columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any,
+    useFilters,
+    usePagination,
+  );
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   const { page }: any = tableInstance;
 
@@ -129,12 +171,13 @@ export default function SetupTestsTable(props: VersionTableProps) {
                   headerGroup.headers.map((column: any) => {
                     return (
                       // Apply the header cell props
-                      <T.Th {...column.getHeaderProps()} >
+                      <T.Th {...column.getHeaderProps()}>
                         <div className="flex gap-x-2">
                           {column.render('Header')}
-                          {column.filterable ? column.render('Filter') : null}</div>
+                          {column.filterable ? column.render('Filter') : null}
+                        </div>
                       </T.Th>
-                    )
+                    );
                   })
                 }
               </T.Tr>
@@ -182,6 +225,6 @@ export default function SetupTestsTable(props: VersionTableProps) {
 function filterComponent(rows: any, _: any, filterValue: RawVersion[]) {
   return rows.filter((row: any) => {
     const componentVersionMap = row.values?.componentVersionMap || {};
-    return filterValue.every(({componentId, tag}) => componentVersionMap[componentId] === tag)
-  })
+    return filterValue.every(({ componentId, tag }) => componentVersionMap[componentId] === tag);
+  });
 }
