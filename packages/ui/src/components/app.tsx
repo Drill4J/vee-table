@@ -41,7 +41,7 @@ import { FormProps } from './forms/types';
 function App() {
   return (
     <div>
-      <div className="header">
+      <div className="header z-10">
         <div style={{ marginRight: '15px' }}>
           {!connection.isConnected() ? ( // TODO useConnection
             <button onClick={() => connection.connect()}>Authenticate using GitHub</button>
