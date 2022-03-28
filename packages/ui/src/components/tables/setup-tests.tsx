@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFilters, usePagination, useTable } from 'react-table';
 import styled from 'styled-components';
 import ElapsedTimer from '../elapsed-timer';
@@ -26,6 +26,10 @@ import { T } from './styles';
 import { Pagination } from './Pagination';
 import FilterByComponentsVersions from './filter-by-components-versions';
 import { RawVersion, Ledger } from '@drill4j/vee-ledger';
+import RetryRunCell from './cells/retry-run-cell';
+import useUser from '../../github/hooks/use-user';
+import e2e from '../../e2e';
+import { useAutotestsSetups } from '../../e2e/use-autotests-setups';
 
 type VersionTableProps = {
   setup: Setup;
@@ -47,6 +51,8 @@ export default function SetupTestsTable(props: VersionTableProps) {
     () => tests.sort(sortBy('date')),
     [tests, tests.length], // FIXME
   );
+  const { data: userData } = useUser();
+  const autotestsSetups = useAutotestsSetups();
 
   const columns = React.useMemo(
     () => [
@@ -68,8 +74,12 @@ export default function SetupTestsTable(props: VersionTableProps) {
           const userName = props.value?.userName;
           const reason = props.value?.reason;
 
-          return <span>{userName}: {reason}</span>
-        }
+          return (
+            <span>
+              {userName}: {reason}
+            </span>
+          );
+        },
       },
       {
         Header: 'Versions',
@@ -85,7 +95,7 @@ export default function SetupTestsTable(props: VersionTableProps) {
         },
       },
       {
-        Header: "Autotests params",
+        Header: 'Autotests params',
         accessor: 'testParams',
         Cell: (props: any) => {
           return (
@@ -98,20 +108,41 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Run',
         accessor: 'linkToRun',
-        Cell: (props: any) => <a href={props.value} target="_blank" rel="noreferrer">Run details</a>
+        Cell: (props: any) => (
+          <a href={props.value} target="_blank" rel="noreferrer">
+            Run details
+          </a>
+        ),
+      },
+      {
+        Header: 'Retry Run',
+        accessor: 'retry', //this property does not exists
+        Cell: (props: any) => (
+          <RetryRunCell
+            userLogin={userData?.login}
+            componentsVersions={props.row.original.componentVersionMap}
+            params={props.row.original.testParams}
+            autotestsSetups={autotestsSetups}
+            setupId={setup.id}
+          />
+        ),
       },
     ],
-    [],
+    [autotestsSetups, userData, setup.id],
   );
 
   const defaultColumn = React.useMemo(
     () => ({
-      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props}/>,
+      Filter: (props: any) => <FilterByComponentsVersions setupId={setup.id} ledger={ledger} {...props} />,
     }),
     [],
   );
 
-  const tableInstance = useTable({ columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any, useFilters, usePagination);
+  const tableInstance = useTable(
+    { columns, data, initialState: { pageSize: INIT_PAGE_SIZE }, defaultColumn } as any,
+    useFilters,
+    usePagination,
+  );
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   const { page }: any = tableInstance;
 
@@ -129,12 +160,13 @@ export default function SetupTestsTable(props: VersionTableProps) {
                   headerGroup.headers.map((column: any) => {
                     return (
                       // Apply the header cell props
-                      <T.Th {...column.getHeaderProps()} >
+                      <T.Th {...column.getHeaderProps()}>
                         <div className="flex gap-x-2">
                           {column.render('Header')}
-                          {column.filterable ? column.render('Filter') : null}</div>
+                          {column.filterable ? column.render('Filter') : null}
+                        </div>
                       </T.Th>
-                    )
+                    );
                   })
                 }
               </T.Tr>
@@ -182,6 +214,6 @@ export default function SetupTestsTable(props: VersionTableProps) {
 function filterComponent(rows: any, _: any, filterValue: RawVersion[]) {
   return rows.filter((row: any) => {
     const componentVersionMap = row.values?.componentVersionMap || {};
-    return filterValue.every(({componentId, tag}) => componentVersionMap[componentId] === tag)
-  })
+    return filterValue.every(({ componentId, tag }) => componentVersionMap[componentId] === tag);
+  });
 }

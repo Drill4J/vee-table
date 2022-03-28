@@ -16,35 +16,20 @@
 import { Formik, Form, Field } from 'formik';
 import SelectField from './generic/select-field';
 import { RawVersion } from '@drill4j/vee-ledger';
+import { useMemo, useState } from 'react';
+
 import VersionsSelect from '../versions-select';
-import { useEffect, useMemo, useState } from 'react';
 import e2e from '../../e2e';
 import { arrToKeyValue, keyValueToArr } from './util';
 import useUser from '../../github/hooks/use-user';
 import { FormProps } from './types';
-
-interface AutotestsSetup {
-  file: string;
-  cypressEnv: Record<string, string>;
-  params: Record<string, string>[];
-}
-
+import { AutotestsSetup } from '../../e2e/types';
+import { useAutotestsSetups } from '../../e2e/use-autotests-setups';
 
 export default (props: FormProps) => {
-  const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
+  const autotestsSetups = useAutotestsSetups();
   const [componentIds, setComponentIds] = useState<string[]>([]);
   const { data: useData } = useUser();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await e2e.getSetups();
-        setAutotestsSetups(data);
-      } catch (e) {
-        alert('Failed fetch setups from e2e repo: ' + (e as any)?.message || JSON.stringify(e));
-      }
-    })();
-  }, []);
 
   return (
     <Formik
