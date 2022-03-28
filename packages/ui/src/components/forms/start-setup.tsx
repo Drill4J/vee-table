@@ -29,7 +29,6 @@ interface AutotestsSetup {
   params: Record<string, string>[];
 }
 
-const initialValues = { setupId: '', isCustomParams: false, componentsVersions: {}, params: '' };
 
 export default (props: FormProps) => {
   const [autotestsSetups, setAutotestsSetups] = useState<Record<string, AutotestsSetup>>({});
