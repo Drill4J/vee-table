@@ -127,7 +127,7 @@ function FormModals({ modals, label }: { modals: Modal[]; label: string }) {
     <div className="flex gap-x-3 p-2">
       {label}:
       {modals.map(({ label }) => (
-        <span className="link" onClick={() => setSelectedModal(label)}>
+        <span className="link" onClick={() => setSelectedModal(label)} key={label}>
           {label}
         </span>
       ))}

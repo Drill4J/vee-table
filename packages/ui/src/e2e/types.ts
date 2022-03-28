@@ -18,3 +18,11 @@ export interface AutotestsSetup {
   cypressEnv: Record<string, string>;
   params: Record<string, string>[];
 }
+
+export interface Branch {
+  commit: { sha: string };
+  sha: string;
+  url: string;
+  name: string;
+  protected: boolean;
+}
