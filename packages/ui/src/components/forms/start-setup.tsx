@@ -55,10 +55,10 @@ export default (props: FormProps) => {
         ref: 'main',
         isCommitHash: false,
       }}
-      onSubmit={async ({ setupId, componentsVersions, params, repeatsCount, ref }) => {
+      onSubmit={async ({ setupId, componentsVersions, params, repeatsCount = 1, ref }) => {
         let countOfSuccessfullyStartedSetups = 0;
         try {
-          for (let i = 1; i <= repeatsCount; i++) {
+          for (let i = 0; i < repeatsCount; i++) {
             const response = await e2e.startSetup({
               versions: keyValueToArr('componentId', 'tag')(componentsVersions) as RawVersion[],
               params: JSON.parse(params),

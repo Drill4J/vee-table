@@ -118,6 +118,11 @@ export default function SetupTestsTable(props: VersionTableProps) {
       {
         Header: 'Description',
         accessor: 'description',
+        Cell: ({ value }: any) => (
+          <div title={value} className={'max-w-[400px] truncate'}>
+            {value}
+          </div>
+        ),
       },
       {
         Header: 'Comments',
