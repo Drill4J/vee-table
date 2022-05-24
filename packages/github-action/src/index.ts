@@ -31,6 +31,7 @@ async function main() {
   try {
     const githubAccessToken = core.getInput(INPUT_KEYS.GH_ACCESS_TOKEN);
     const actionType = core.getInput(INPUT_KEYS.ACTION_TYPE);
+    console.log('before new Ledger()')
     const ledger = new Ledger({
       octokitAuthToken: githubAccessToken,
       ledgerRepo: {
@@ -39,18 +40,25 @@ async function main() {
         name: core.getInput(INPUT_KEYS.LEDGER_REPO_NAME),
       },
     });
+    console.log('after new Ledger()')
 
+    console.log('before ledger.connected()')
     await ledger.connected();
+    console.log('after ledger.connected()')
 
     switch (actionType) {
       case ACTION_TYPES.ADD_VERSION: {
+        console.log('ADD_VERSION 1')
         const componentId = core.getInput(INPUT_KEYS.VERSION_COMPONENT_ID);
         const tag = core.getInput(INPUT_KEYS.VERSION_TAG);
+        console.log('ADD_VERSION 2')
         await ledger.addVersion({ componentId, tag });
+        console.log('ADD_VERSION 3')
         console.log(`SUCCESS: Added version ${componentId}@${tag}`);
         break;
       }
       case ACTION_TYPES.ADD_TEST_RESULT: {
+        console.log('ADD_TEST_RESULT 1')
         const setupId = core.getInput(INPUT_KEYS.TEST_SETUP_ID);
         const status = core.getInput(INPUT_KEYS.TEST_STATUS);
         const description = core.getInput(INPUT_KEYS.TEST_DESCRIPTION);
@@ -62,7 +70,9 @@ async function main() {
         const linkToRun = core.getInput(INPUT_KEYS.LINK_TO_RUN);
         const componentVersionMap = JSON.parse(versionsStr);
         const testParams = JSON.parse(core.getInput(INPUT_KEYS.TEST_PARAMS));
+        console.log('ADD_TEST_RESULT 2')
         await ledger.addTest({ setupId, status, componentVersionMap, description, releasedComponent, initiator, linkToRun, testParams });
+        console.log('ADD_TEST_RESULT 3')
         console.log(`SUCCESS: Added test result ${setupId} - ${status}. Versions:\n${versionsStr}`);
         break;
       }
