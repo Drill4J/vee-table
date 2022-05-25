@@ -62,11 +62,17 @@ export class Ledger {
   }
 
   private async connect() {
+    console.log('connect 1')
     this.octokit = new Octokit({ auth: this.auth });
+    console.log('connect 2')
     const data = await this.fetchData();
+    console.log('connect 3')
     this.data = this.deserialize(data.content);
+    console.log('connect 4')
     this.validateDataObject(this.data);
+    console.log('connect 5')
     this.sha = data.sha;
+    console.log('connect done')
   }
 
   public async connected() {
@@ -220,17 +226,21 @@ export class Ledger {
   }
 
   public async addVersion(rawData: RawVersion) {
+    console.log('addVersion 1')
     const { componentId, tag } = rawData;
 
     validateNonEmptyString('componentId', componentId);
     validateNonEmptyString('tag', tag);
 
+    console.log('addVersion 2')
+
     if (!this.isComponentExists(componentId)) {
+      console.log('addVersion - branch 1')
       const msg = `Component with id ${componentId} does not exist, but it will be added automatically. Later, you can edit it's parameters manually`;
       this.warning(msg);
       await this.addComponent({ id: componentId, name: componentId });
     }
-
+    console.log('addVersion 3')
     const existingVersion = this.findVersion(componentId, tag);
     if (existingVersion) {
       const msg = `
@@ -242,16 +252,23 @@ export class Ledger {
       this.warning(msg);
     }
 
+    console.log('addVersion 4')
+
     await this.addTo('versions', {
       date: Date.now(),
       componentId: componentId.trim(),
       tag: tag.trim(),
     });
+    console.log('addVersion done')
   }
 
   public async addTest(data: RawTestResult) {
+    console.log('addTest 1')
+
     validateNonEmptyString('id', data.setupId);
     validateNonEmptyString('status', data.status);
+
+    console.log('addTest 2')
 
     if (Object.keys(data.componentVersionMap).length === 0) {
       throw new Error('Please specify a version for each of the components');
@@ -269,17 +286,21 @@ export class Ledger {
       Make sure to add ${data.setupId} to setups list.`;
       this.warning(msg);
       // FIXME I hate it
+      console.log('addTest - branch 1')
       this.validateSetupComponentsList(data);
     } else {
+      console.log('addTest - branch 2')
       this.validateSetupComponentsList(data, setup.componentIds);
     }
 
+    console.log('addTest 3')
     await this.addTo<TestResult>('tests', {
       ...data,
       date: Date.now(),
       status: data.status.trim(),
       description: data.description?.trim(),
     });
+    console.log('addTest done')
   }
 
   public async addComment({ message, releaseComponentDate, userName }: Comment) {
